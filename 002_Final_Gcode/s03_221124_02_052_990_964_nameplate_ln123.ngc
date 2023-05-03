@@ -1,0 +1,1443 @@
+%
+;Copyright © 1988-2022 by Abbott Analytical Products. All Rights Reserved.
+;Lines "Jack\n Old Shu\n Goins"  Embedded 025 DRossie nameplate code
+;221126_tr #<depthengrave>  = .00035; 221126_1606 for trial stain [#<engrave_depthperloop> / #<passesengrave>]
+
+;221125_tr need corner test ho;es for level holding
+;221124_tr adjust xyspeed from F15 to F6.  Manually inrecease spindle speed to 2/3 of top
+;           general housekeeping; dropped Milling section
+;           added M106 for verification
+;221123_tr implemented safego, xyspeed, and zpeed
+;           set 2places from T8 collet engraver Freecad tooltable to T7 cullet engraver of linuncnc tooltable
+;           change engrave_thick to engrave_depthperloop.  May want to take one or more pass to
+;                engrave content.
+;           commented-out milling sequnence
+;           #<passdepth> for Engrave set to .00025
+;           #<passdepth> for Engrave set to .00035
+
+
+(Exported by FreeCAD)
+(Post Processor: linuxcnc_post)
+(Output Time:2022-11-20 16:43:45.964819)
+(begin preamble)
+;G40G49G80G61G54G90G20F30S1000 ; 
+G20    ; set to inches
+
+;Begin embed
+;Embedded 025 DRossie nameplate code
+(^^^^ Begin Abstracted from 182_ .ngc)
+
+#<sheet_thick>        = .010 ; 10/29 = .3448 or aprox .35 thou
+
+
+
+;Engrave
+#<passdepth>     = .00075       ;swag depth of engrave
+#<engrave_depthperloop>      =  #<passdepth>  ;set Engrave depth to depth for one loop pass of characters
+#<passesengrave> = 1 (number of times to go around)
+(depthengrave = engrave_depthperloop/passesengrave)
+#<depthengrave>  = .00035; 221126_1606 for trial stain [#<engrave_depthperloop> / #<passesengrave>]
+
+#<safego>      = 0.2000
+#<xyspeed>     = 6;
+#<zspeed>      = 3.9;  
+
+;redfeined from preamble G40 G49 G80 G61 G54 G90 G20 F30 S1000 ; 
+G40	; disable tool radius compensation
+;180506   G49	; disable tool length compensation
+G80	; cancel modal motion
+G54	; select coordinate system 1
+G90	; disable incremental moves
+;G20	; defined earlier in preamble change from metric
+F#<xyspeed>	; 221124_tr set feedrate
+S1000	; set spindle speed
+G61	; exact path mode
+
+
+
+
+(*************)
+(Prep for engrave)
+G00 G53 X0 Y0 Z0
+(go to home)
+;G0 Z3  ; 221120 manually added to load T21 gracefully
+(begin operation: T21: Dremel Scribe Engraver)
+(machine: not set, in/min)
+(T21: Dremel Scribe Engraver)
+M6 T21
+M3 S1200
+(finish operation: T21: Dremel Scribe Engraver)
+G04 P3.0	; wait for 3.0 seconds
+
+(begin operation: Engrave)
+(start engrave loop)
+
+
+
+#<i>      = 0; #302
+#<zvalue> = 0; #303
+#<depth>  = 0
+o150 while [#<i> lt #<passesengrave>]
+#<i> = [#<i> + 1]
+#<depth> = [#<i> * #<depthengrave>]
+
+
+(^^^^^^)
+
+G01  Z#<safego> F#<zspeed>        
+
+
+($$$$$$)
+
+
+;End embed of top end of loop
+
+
+(Engrave)
+G0 X1.7874 Y1.2354 Z#<safego>
+G0 X1.7874 Y1.2354 Z#<safego>
+G1 X1.7874 Y1.2354 Z-#<depth> F#<zspeed>
+G1 X1.7859 Y1.2409 Z-#<depth> F#<xyspeed>
+G1 X1.7843 Y1.2459 Z-#<depth> F#<xyspeed>
+G1 X1.7823 Y1.2501 Z-#<depth> F#<xyspeed>
+G1 X1.7802 Y1.2536 Z-#<depth> F#<xyspeed>
+G1 X1.7777 Y1.2565 Z-#<depth> F#<xyspeed>
+G1 X1.7777 Y1.2565 Z-0.0050 F#<xyspeed>
+G0 Z#<safego>
+(MSG, First corner.  Waiting for your verifcation)        
+ M106
+G04 P5.0	; wait for 3.0 seconds
+G0 X1.7595 Y1.2627 Z#<safego>
+G0 X1.7595 Y1.2627 Z#<safego>
+G1 X1.7595 Y1.2627 Z-#<depth> F#<zspeed>
+G1 X1.7548 Y1.2624 Z-#<depth> F#<xyspeed>
+G1 X1.7504 Y1.2616 Z-#<depth> F#<xyspeed>
+G1 X1.7465 Y1.2601 Z-#<depth> F#<xyspeed>
+G1 X1.7429 Y1.2581 Z-#<depth> F#<xyspeed>
+G1 X1.7397 Y1.2554 Z-#<depth> F#<xyspeed>
+G1 X1.7369 Y1.2522 Z-#<depth> F#<xyspeed>
+G1 X1.7344 Y1.2484 Z-#<depth> F#<xyspeed>
+G1 X1.7324 Y1.2440 Z-#<depth> F#<xyspeed>
+G1 X1.7307 Y1.2391 Z-#<depth> F#<xyspeed>
+G1 X1.7293 Y1.2335 Z-#<depth> F#<xyspeed>
+G1 X1.7284 Y1.2274 Z-#<depth> F#<xyspeed>
+G1 X1.7278 Y1.2207 Z-#<depth> F#<xyspeed>
+G1 X1.7277 Y1.2134 Z-#<depth> F#<xyspeed>
+G1 X1.7280 Y1.2049 Z-#<depth> F#<xyspeed>
+G1 X1.7290 Y1.1972 Z-#<depth> F#<xyspeed>
+G1 X1.7307 Y1.1903 Z-#<depth> F#<xyspeed>
+G1 X1.7331 Y1.1841 Z-#<depth> F#<xyspeed>
+G1 X1.7361 Y1.1786 Z-#<depth> F#<xyspeed>
+G1 X1.7387 Y1.1753 Z-#<depth> F#<xyspeed>
+G1 X1.7415 Y1.1725 Z-#<depth> F#<xyspeed>
+G1 X1.7446 Y1.1702 Z-#<depth> F#<xyspeed>
+G1 X1.7479 Y1.1684 Z-#<depth> F#<xyspeed>
+G1 X1.7515 Y1.1671 Z-#<depth> F#<xyspeed>
+G1 X1.7554 Y1.1663 Z-#<depth> F#<xyspeed>
+G1 X1.7595 Y1.1661 Z-#<depth> F#<xyspeed>
+G1 X1.7631 Y1.1663 Z-#<depth> F#<xyspeed>
+G1 X1.7665 Y1.1668 Z-#<depth> F#<xyspeed>
+G1 X1.7697 Y1.1677 Z-#<depth> F#<xyspeed>
+G1 X1.7725 Y1.1689 Z-#<depth> F#<xyspeed>
+G1 X1.7750 Y1.1704 Z-#<depth> F#<xyspeed>
+G1 X1.7773 Y1.1724 Z-#<depth> F#<xyspeed>
+G1 X1.7798 Y1.1752 Z-#<depth> F#<xyspeed>
+G1 X1.7820 Y1.1787 Z-#<depth> F#<xyspeed>
+G1 X1.7840 Y1.1829 Z-#<depth> F#<xyspeed>
+G1 X1.7858 Y1.1877 Z-#<depth> F#<xyspeed>
+G1 X1.7874 Y1.1932 Z-#<depth> F#<xyspeed>
+G1 X1.8248 Y1.1932 Z-#<depth> F#<xyspeed>
+G1 X1.8231 Y1.1828 Z-#<depth> F#<xyspeed>
+G1 X1.8202 Y1.1733 Z-#<depth> F#<xyspeed>
+G1 X1.8161 Y1.1647 Z-#<depth> F#<xyspeed>
+G1 X1.8108 Y1.1571 Z-#<depth> F#<xyspeed>
+G1 X1.8043 Y1.1503 Z-#<depth> F#<xyspeed>
+G1 X1.7968 Y1.1446 Z-#<depth> F#<xyspeed>
+G1 X1.7886 Y1.1402 Z-#<depth> F#<xyspeed>
+G1 X1.7795 Y1.1371 Z-#<depth> F#<xyspeed>
+G1 X1.7698 Y1.1352 Z-#<depth> F#<xyspeed>
+G1 X1.7592 Y1.1345 Z-#<depth> F#<xyspeed>
+G1 X1.7484 Y1.1351 Z-#<depth> F#<xyspeed>
+G1 X1.7385 Y1.1368 Z-#<depth> F#<xyspeed>
+G1 X1.7294 Y1.1397 Z-#<depth> F#<xyspeed>
+G1 X1.7211 Y1.1437 Z-#<depth> F#<xyspeed>
+G1 X1.7137 Y1.1489 Z-#<depth> F#<xyspeed>
+G1 X1.7071 Y1.1552 Z-#<depth> F#<xyspeed>
+G1 X1.7014 Y1.1626 Z-#<depth> F#<xyspeed>
+G1 X1.6968 Y1.1709 Z-#<depth> F#<xyspeed>
+G1 X1.6932 Y1.1801 Z-#<depth> F#<xyspeed>
+G1 X1.6906 Y1.1903 Z-#<depth> F#<xyspeed>
+G1 X1.6891 Y1.2013 Z-#<depth> F#<xyspeed>
+G1 X1.6886 Y1.2134 Z-#<depth> F#<xyspeed>
+G1 X1.6891 Y1.2257 Z-#<depth> F#<xyspeed>
+G1 X1.6906 Y1.2371 Z-#<depth> F#<xyspeed>
+G1 X1.6932 Y1.2476 Z-#<depth> F#<xyspeed>
+G1 X1.6969 Y1.2570 Z-#<depth> F#<xyspeed>
+G1 X1.7016 Y1.2655 Z-#<depth> F#<xyspeed>
+G1 X1.7073 Y1.2731 Z-#<depth> F#<xyspeed>
+G1 X1.7140 Y1.2796 Z-#<depth> F#<xyspeed>
+G1 X1.7214 Y1.2849 Z-#<depth> F#<xyspeed>
+G1 X1.7298 Y1.2890 Z-#<depth> F#<xyspeed>
+G1 X1.7389 Y1.2920 Z-#<depth> F#<xyspeed>
+G1 X1.7489 Y1.2938 Z-#<depth> F#<xyspeed>
+G1 X1.7597 Y1.2944 Z-#<depth> F#<xyspeed>
+G1 X1.7706 Y1.2937 Z-#<depth> F#<xyspeed>
+G1 X1.7806 Y1.2918 Z-#<depth> F#<xyspeed>
+G1 X1.7898 Y1.2887 Z-#<depth> F#<xyspeed>
+G1 X1.7981 Y1.2843 Z-#<depth> F#<xyspeed>
+G1 X1.8055 Y1.2786 Z-#<depth> F#<xyspeed>
+G1 X1.8109 Y1.2731 Z-#<depth> F#<xyspeed>
+G1 X1.8154 Y1.2669 Z-#<depth> F#<xyspeed>
+G1 X1.8190 Y1.2600 Z-#<depth> F#<xyspeed>
+G1 X1.8218 Y1.2525 Z-#<depth> F#<xyspeed>
+G1 X1.8238 Y1.2442 Z-#<depth> F#<xyspeed>
+G1 X1.8248 Y1.2354 Z-#<depth> F#<xyspeed>
+G0 Z#<safego>
+G0 X1.6227 Y1.2477 Z#<safego>
+G0 X1.6227 Y1.2477 Z#<safego>
+G1 X1.6227 Y1.2477 Z-#<depth> F#<zspeed>
+G1 X1.6226 Y1.2499 Z-#<depth> F#<xyspeed>
+G1 X1.6222 Y1.2520 Z-#<depth> F#<xyspeed>
+G1 X1.6215 Y1.2539 Z-#<depth> F#<xyspeed>
+G1 X1.6206 Y1.2555 Z-#<depth> F#<xyspeed>
+G1 X1.6194 Y1.2570 Z-#<depth> F#<xyspeed>
+G1 X1.6179 Y1.2584 Z-#<depth> F#<xyspeed>
+G1 X1.6162 Y1.2595 Z-#<depth> F#<xyspeed>
+G1 X1.6142 Y1.2605 Z-#<depth> F#<xyspeed>
+G1 X1.6119 Y1.2613 Z-#<depth> F#<xyspeed>
+G1 X1.6094 Y1.2619 Z-#<depth> F#<xyspeed>
+G1 X1.6066 Y1.2624 Z-#<depth> F#<xyspeed>
+G1 X1.6035 Y1.2626 Z-#<depth> F#<xyspeed>
+G1 X1.6002 Y1.2627 Z-#<depth> F#<xyspeed>
+G1 X1.5956 Y1.2626 Z-#<depth> F#<xyspeed>
+G1 X1.5915 Y1.2622 Z-#<depth> F#<xyspeed>
+G1 X1.5878 Y1.2616 Z-#<depth> F#<xyspeed>
+G1 X1.5846 Y1.2607 Z-#<depth> F#<xyspeed>
+G1 X1.5820 Y1.2596 Z-#<depth> F#<xyspeed>
+G1 X1.5797 Y1.2583 Z-#<depth> F#<xyspeed>
+G1 X1.5779 Y1.2566 Z-#<depth> F#<xyspeed>
+G1 X1.5764 Y1.2545 Z-#<depth> F#<xyspeed>
+G1 X1.5750 Y1.2520 Z-#<depth> F#<xyspeed>
+G1 X1.5739 Y1.2491 Z-#<depth> F#<xyspeed>
+G1 X1.5731 Y1.2458 Z-#<depth> F#<xyspeed>
+G1 X1.5725 Y1.2421 Z-#<depth> F#<xyspeed>
+G1 X1.5348 Y1.2421 Z-#<depth> F#<xyspeed>
+G1 X1.5358 Y1.2504 Z-#<depth> F#<xyspeed>
+G1 X1.5376 Y1.2581 Z-#<depth> F#<xyspeed>
+G1 X1.5402 Y1.2650 Z-#<depth> F#<xyspeed>
+G1 X1.5436 Y1.2711 Z-#<depth> F#<xyspeed>
+G1 X1.5478 Y1.2766 Z-#<depth> F#<xyspeed>
+G1 X1.5528 Y1.2813 Z-#<depth> F#<xyspeed>
+G1 X1.5585 Y1.2853 Z-#<depth> F#<xyspeed>
+G1 X1.5651 Y1.2886 Z-#<depth> F#<xyspeed>
+G1 X1.5725 Y1.2911 Z-#<depth> F#<xyspeed>
+G1 X1.5806 Y1.2929 Z-#<depth> F#<xyspeed>
+G1 X1.5896 Y1.2940 Z-#<depth> F#<xyspeed>
+G1 X1.5993 Y1.2944 Z-#<depth> F#<xyspeed>
+G1 X1.6084 Y1.2941 Z-#<depth> F#<xyspeed>
+G1 X1.6168 Y1.2933 Z-#<depth> F#<xyspeed>
+G1 X1.6245 Y1.2919 Z-#<depth> F#<xyspeed>
+G1 X1.6314 Y1.2900 Z-#<depth> F#<xyspeed>
+G1 X1.6376 Y1.2875 Z-#<depth> F#<xyspeed>
+G1 X1.6431 Y1.2845 Z-#<depth> F#<xyspeed>
+G1 X1.6479 Y1.2809 Z-#<depth> F#<xyspeed>
+G1 X1.6519 Y1.2768 Z-#<depth> F#<xyspeed>
+G1 X1.6552 Y1.2721 Z-#<depth> F#<xyspeed>
+G1 X1.6577 Y1.2669 Z-#<depth> F#<xyspeed>
+G1 X1.6596 Y1.2612 Z-#<depth> F#<xyspeed>
+G1 X1.6607 Y1.2549 Z-#<depth> F#<xyspeed>
+G1 X1.6610 Y1.2480 Z-#<depth> F#<xyspeed>
+G1 X1.6610 Y1.1642 Z-#<depth> F#<xyspeed>
+G1 X1.6613 Y1.1608 Z-#<depth> F#<xyspeed>
+G1 X1.6620 Y1.1575 Z-#<depth> F#<xyspeed>
+G1 X1.6633 Y1.1544 Z-#<depth> F#<xyspeed>
+G1 X1.6650 Y1.1514 Z-#<depth> F#<xyspeed>
+G1 X1.6673 Y1.1485 Z-#<depth> F#<xyspeed>
+G1 X1.6700 Y1.1457 Z-#<depth> F#<xyspeed>
+G0 Z#<safego>
+G0 X1.6700 Y1.1410 Z#<safego>
+G0 X1.6700 Y1.1410 Z#<safego>
+G1 X1.6700 Y1.1410 Z-#<depth> F#<zspeed>
+G1 X1.6276 Y1.1410 Z-#<depth> F#<xyspeed>
+G1 X1.6259 Y1.1434 Z-#<depth> F#<xyspeed>
+G1 X1.6247 Y1.1461 Z-#<depth> F#<xyspeed>
+G1 X1.6237 Y1.1491 Z-#<depth> F#<xyspeed>
+G1 X1.6232 Y1.1524 Z-#<depth> F#<xyspeed>
+G1 X1.6230 Y1.1561 Z-#<depth> F#<xyspeed>
+G1 X1.6160 Y1.1495 Z-#<depth> F#<xyspeed>
+G1 X1.6088 Y1.1441 Z-#<depth> F#<xyspeed>
+G1 X1.6013 Y1.1399 Z-#<depth> F#<xyspeed>
+G1 X1.5935 Y1.1369 Z-#<depth> F#<xyspeed>
+G1 X1.5855 Y1.1351 Z-#<depth> F#<xyspeed>
+G1 X1.5773 Y1.1345 Z-#<depth> F#<xyspeed>
+G0 Z#<safego>
+G0 X1.5929 Y1.2049 Z#<safego>
+G0 X1.5929 Y1.2049 Z#<safego>
+G1 X1.5929 Y1.2049 Z-#<depth> F#<zspeed>
+G1 X1.5890 Y1.2040 Z-#<depth> F#<xyspeed>
+G1 X1.5855 Y1.2030 Z-#<depth> F#<xyspeed>
+G1 X1.5825 Y1.2019 Z-#<depth> F#<xyspeed>
+G1 X1.5798 Y1.2006 Z-#<depth> F#<xyspeed>
+G1 X1.5775 Y1.1992 Z-#<depth> F#<xyspeed>
+G1 X1.5756 Y1.1976 Z-#<depth> F#<xyspeed>
+G1 X1.5740 Y1.1960 Z-#<depth> F#<xyspeed>
+G1 X1.5728 Y1.1941 Z-#<depth> F#<xyspeed>
+G1 X1.5718 Y1.1919 Z-#<depth> F#<xyspeed>
+G1 X1.5711 Y1.1896 Z-#<depth> F#<xyspeed>
+G1 X1.5707 Y1.1870 Z-#<depth> F#<xyspeed>
+G1 X1.5706 Y1.1843 Z-#<depth> F#<xyspeed>
+G0 Z#<safego>
+G0 X1.6147 Y1.1753 Z#<safego>
+G0 X1.6147 Y1.1753 Z#<safego>
+G1 X1.6147 Y1.1753 Z-#<depth> F#<zspeed>
+G1 X1.6171 Y1.1786 Z-#<depth> F#<xyspeed>
+G1 X1.6191 Y1.1823 Z-#<depth> F#<xyspeed>
+G1 X1.6207 Y1.1865 Z-#<depth> F#<xyspeed>
+G1 X1.6218 Y1.1911 Z-#<depth> F#<xyspeed>
+G1 X1.6225 Y1.1962 Z-#<depth> F#<xyspeed>
+G1 X1.6227 Y1.2016 Z-#<depth> F#<xyspeed>
+G0 Z#<safego>
+G0 X1.5006 Y1.3445 Z#<safego>
+G0 X1.5006 Y1.3445 Z#<safego>
+G1 X1.5006 Y1.3445 Z-#<depth> F#<zspeed>
+G1 X1.5006 Y1.1941 Z-#<depth> F#<xyspeed>
+G1 X1.5001 Y1.1849 Z-#<depth> F#<xyspeed>
+G1 X1.4987 Y1.1765 Z-#<depth> F#<xyspeed>
+G1 X1.4963 Y1.1688 Z-#<depth> F#<xyspeed>
+G1 X1.4930 Y1.1618 Z-#<depth> F#<xyspeed>
+G1 X1.4888 Y1.1555 Z-#<depth> F#<xyspeed>
+G1 X1.4836 Y1.1500 Z-#<depth> F#<xyspeed>
+G1 X1.4775 Y1.1453 Z-#<depth> F#<xyspeed>
+G1 X1.4706 Y1.1414 Z-#<depth> F#<xyspeed>
+G1 X1.4630 Y1.1384 Z-#<depth> F#<xyspeed>
+G1 X1.4546 Y1.1363 Z-#<depth> F#<xyspeed>
+G1 X1.4453 Y1.1350 Z-#<depth> F#<xyspeed>
+G1 X1.4353 Y1.1345 Z-#<depth> F#<xyspeed>
+G1 X1.4241 Y1.1353 Z-#<depth> F#<xyspeed>
+G1 X1.4133 Y1.1374 Z-#<depth> F#<xyspeed>
+G1 X1.4064 Y1.1397 Z-#<depth> F#<xyspeed>
+G1 X1.3996 Y1.1428 Z-#<depth> F#<xyspeed>
+G1 X1.3930 Y1.1467 Z-#<depth> F#<xyspeed>
+G0 Z#<safego>
+G0 X1.3774 Y1.1660 Z#<safego>
+G0 X1.3774 Y1.1660 Z#<safego>
+G1 X1.3774 Y1.1660 Z-#<depth> F#<zspeed>
+G1 X1.3748 Y1.1727 Z-#<depth> F#<xyspeed>
+G1 X1.3730 Y1.1799 Z-#<depth> F#<xyspeed>
+G1 X1.3719 Y1.1878 Z-#<depth> F#<xyspeed>
+G1 X1.3716 Y1.1963 Z-#<depth> F#<xyspeed>
+G1 X1.3716 Y1.2164 Z-#<depth> F#<xyspeed>
+G1 X1.4135 Y1.2164 Z-#<depth> F#<xyspeed>
+G1 X1.4135 Y1.1968 Z-#<depth> F#<xyspeed>
+G1 X1.4136 Y1.1924 Z-#<depth> F#<xyspeed>
+G1 X1.4141 Y1.1884 Z-#<depth> F#<xyspeed>
+G1 X1.4148 Y1.1848 Z-#<depth> F#<xyspeed>
+G1 X1.4158 Y1.1817 Z-#<depth> F#<xyspeed>
+G1 X1.4171 Y1.1789 Z-#<depth> F#<xyspeed>
+G1 X1.4187 Y1.1766 Z-#<depth> F#<xyspeed>
+G1 X1.4204 Y1.1750 Z-#<depth> F#<xyspeed>
+G1 X1.4224 Y1.1736 Z-#<depth> F#<xyspeed>
+G1 X1.4246 Y1.1724 Z-#<depth> F#<xyspeed>
+G1 X1.4270 Y1.1715 Z-#<depth> F#<xyspeed>
+G1 X1.4298 Y1.1709 Z-#<depth> F#<xyspeed>
+G1 X1.4328 Y1.1705 Z-#<depth> F#<xyspeed>
+G1 X1.4361 Y1.1704 Z-#<depth> F#<xyspeed>
+G1 X1.4396 Y1.1705 Z-#<depth> F#<xyspeed>
+G1 X1.4428 Y1.1710 Z-#<depth> F#<xyspeed>
+G1 X1.4457 Y1.1719 Z-#<depth> F#<xyspeed>
+G1 X1.4484 Y1.1731 Z-#<depth> F#<xyspeed>
+G1 X1.4508 Y1.1746 Z-#<depth> F#<xyspeed>
+G1 X1.4528 Y1.1765 Z-#<depth> F#<xyspeed>
+G1 X1.4546 Y1.1787 Z-#<depth> F#<xyspeed>
+G1 X1.4561 Y1.1812 Z-#<depth> F#<xyspeed>
+G1 X1.4573 Y1.1840 Z-#<depth> F#<xyspeed>
+G1 X1.4581 Y1.1870 Z-#<depth> F#<xyspeed>
+G1 X1.4586 Y1.1904 Z-#<depth> F#<xyspeed>
+G1 X1.4587 Y1.1941 Z-#<depth> F#<xyspeed>
+G1 X1.4587 Y1.3445 Z-#<depth> F#<xyspeed>
+G0 Z#<safego>
+G0 X1.9412 Y1.2918 Z#<safego>
+G0 X1.9412 Y1.2918 Z#<safego>
+G1 X1.9412 Y1.2918 Z-#<depth> F#<zspeed>
+G1 X1.9856 Y1.2918 Z-#<depth> F#<xyspeed>
+G1 X1.9342 Y1.2348 Z-#<depth> F#<xyspeed>
+G1 X1.9892 Y1.1410 Z-#<depth> F#<xyspeed>
+G1 X1.9434 Y1.1410 Z-#<depth> F#<xyspeed>
+G1 X1.9074 Y1.2075 Z-#<depth> F#<xyspeed>
+G1 X1.8917 Y1.1905 Z-#<depth> F#<xyspeed>
+G1 X1.8917 Y1.1410 Z-#<depth> F#<xyspeed>
+G1 X1.8527 Y1.1410 Z-#<depth> F#<xyspeed>
+G1 X1.8527 Y1.3445 Z-#<depth> F#<xyspeed>
+G1 X1.8917 Y1.3445 Z-#<depth> F#<xyspeed>
+G1 X1.8917 Y1.2332 Z-#<depth> F#<xyspeed>
+G0 Z#<safego>
+G0 X1.0484 Y0.9560 Z#<safego>
+G0 X1.0484 Y0.9560 Z#<safego>
+G1 X1.0484 Y0.9560 Z-#<depth> F#<zspeed>
+G1 X1.0484 Y0.9923 Z-#<depth> F#<xyspeed>
+G1 X1.0870 Y0.9923 Z-#<depth> F#<xyspeed>
+G1 X1.0870 Y0.9560 Z-#<depth> F#<xyspeed>
+G1 X1.0752 Y0.9200 Z-#<depth> F#<xyspeed>
+G1 X1.0595 Y0.9200 Z-#<depth> F#<xyspeed>
+G1 X1.0484 Y0.9560 Z-#<depth> F#<xyspeed>
+G0 Z#<safego>
+G0 X1.1143 Y0.9560 Z#<safego>
+G0 X1.1143 Y0.9560 Z#<safego>
+G1 X1.1143 Y0.9560 Z-#<depth> F#<zspeed>
+G1 X1.1143 Y0.9923 Z-#<depth> F#<xyspeed>
+G1 X1.1529 Y0.9923 Z-#<depth> F#<xyspeed>
+G1 X1.1529 Y0.9560 Z-#<depth> F#<xyspeed>
+G1 X1.1411 Y0.9200 Z-#<depth> F#<xyspeed>
+G1 X1.1254 Y0.9200 Z-#<depth> F#<xyspeed>
+G1 X1.1143 Y0.9560 Z-#<depth> F#<xyspeed>
+G0 Z#<safego>
+G0 X1.2367 Y0.8375 Z#<safego>
+G0 X1.2367 Y0.8375 Z#<safego>
+G1 X1.2367 Y0.8375 Z-#<depth> F#<zspeed>
+G1 X1.2413 Y0.8323 Z-#<depth> F#<xyspeed>
+G1 X1.2463 Y0.8280 Z-#<depth> F#<xyspeed>
+G1 X1.2517 Y0.8244 Z-#<depth> F#<xyspeed>
+G1 X1.2575 Y0.8217 Z-#<depth> F#<xyspeed>
+G1 X1.2637 Y0.8197 Z-#<depth> F#<xyspeed>
+G1 X1.2704 Y0.8185 Z-#<depth> F#<xyspeed>
+G1 X1.2774 Y0.8181 Z-#<depth> F#<xyspeed>
+G1 X1.2855 Y0.8186 Z-#<depth> F#<xyspeed>
+G1 X1.2931 Y0.8202 Z-#<depth> F#<xyspeed>
+G1 X1.3002 Y0.8229 Z-#<depth> F#<xyspeed>
+G1 X1.3067 Y0.8266 Z-#<depth> F#<xyspeed>
+G1 X1.3126 Y0.8314 Z-#<depth> F#<xyspeed>
+G1 X1.3181 Y0.8373 Z-#<depth> F#<xyspeed>
+G1 X1.3237 Y0.8455 Z-#<depth> F#<xyspeed>
+G1 X1.3280 Y0.8546 Z-#<depth> F#<xyspeed>
+G1 X1.3311 Y0.8648 Z-#<depth> F#<xyspeed>
+G1 X1.3330 Y0.8759 Z-#<depth> F#<xyspeed>
+G1 X1.3336 Y0.8879 Z-#<depth> F#<xyspeed>
+G1 X1.3330 Y0.9006 Z-#<depth> F#<xyspeed>
+G1 X1.3312 Y0.9121 Z-#<depth> F#<xyspeed>
+G1 X1.3281 Y0.9226 Z-#<depth> F#<xyspeed>
+G1 X1.3238 Y0.9320 Z-#<depth> F#<xyspeed>
+G1 X1.3183 Y0.9404 Z-#<depth> F#<xyspeed>
+G1 X1.3138 Y0.9456 Z-#<depth> F#<xyspeed>
+G1 X1.3088 Y0.9499 Z-#<depth> F#<xyspeed>
+G1 X1.3034 Y0.9535 Z-#<depth> F#<xyspeed>
+G1 X1.2975 Y0.9563 Z-#<depth> F#<xyspeed>
+G1 X1.2913 Y0.9583 Z-#<depth> F#<xyspeed>
+G1 X1.2846 Y0.9595 Z-#<depth> F#<xyspeed>
+G1 X1.2774 Y0.9599 Z-#<depth> F#<xyspeed>
+G1 X1.2704 Y0.9595 Z-#<depth> F#<xyspeed>
+G1 X1.2637 Y0.9583 Z-#<depth> F#<xyspeed>
+G1 X1.2575 Y0.9563 Z-#<depth> F#<xyspeed>
+G1 X1.2517 Y0.9536 Z-#<depth> F#<xyspeed>
+G1 X1.2463 Y0.9500 Z-#<depth> F#<xyspeed>
+G1 X1.2413 Y0.9456 Z-#<depth> F#<xyspeed>
+G1 X1.2367 Y0.9405 Z-#<depth> F#<xyspeed>
+G1 X1.2312 Y0.9322 Z-#<depth> F#<xyspeed>
+G1 X1.2269 Y0.9229 Z-#<depth> F#<xyspeed>
+G1 X1.2238 Y0.9126 Z-#<depth> F#<xyspeed>
+G1 X1.2219 Y0.9013 Z-#<depth> F#<xyspeed>
+G1 X1.2213 Y0.8890 Z-#<depth> F#<xyspeed>
+G1 X1.2219 Y0.8767 Z-#<depth> F#<xyspeed>
+G1 X1.2238 Y0.8654 Z-#<depth> F#<xyspeed>
+G1 X1.2269 Y0.8551 Z-#<depth> F#<xyspeed>
+G1 X1.2312 Y0.8458 Z-#<depth> F#<xyspeed>
+G1 X1.2367 Y0.8375 Z-#<depth> F#<xyspeed>
+G0 Z#<safego>
+G0 X1.2063 Y0.9657 Z#<safego>
+G0 X1.2063 Y0.9657 Z#<safego>
+G1 X1.2063 Y0.9657 Z-#<depth> F#<zspeed>
+G1 X1.2158 Y0.9749 Z-#<depth> F#<xyspeed>
+G1 X1.2262 Y0.9824 Z-#<depth> F#<xyspeed>
+G1 X1.2375 Y0.9882 Z-#<depth> F#<xyspeed>
+G1 X1.2498 Y0.9923 Z-#<depth> F#<xyspeed>
+G1 X1.2630 Y0.9948 Z-#<depth> F#<xyspeed>
+G1 X1.2771 Y0.9956 Z-#<depth> F#<xyspeed>
+G1 X1.2914 Y0.9948 Z-#<depth> F#<xyspeed>
+G1 X1.3047 Y0.9923 Z-#<depth> F#<xyspeed>
+G1 X1.3170 Y0.9882 Z-#<depth> F#<xyspeed>
+G1 X1.3284 Y0.9824 Z-#<depth> F#<xyspeed>
+G1 X1.3388 Y0.9750 Z-#<depth> F#<xyspeed>
+G1 X1.3483 Y0.9659 Z-#<depth> F#<xyspeed>
+G1 X1.3581 Y0.9533 Z-#<depth> F#<xyspeed>
+G1 X1.3657 Y0.9391 Z-#<depth> F#<xyspeed>
+G1 X1.3711 Y0.9234 Z-#<depth> F#<xyspeed>
+G1 X1.3743 Y0.9063 Z-#<depth> F#<xyspeed>
+G1 X1.3754 Y0.8876 Z-#<depth> F#<xyspeed>
+G1 X1.3744 Y0.8701 Z-#<depth> F#<xyspeed>
+G1 X1.3712 Y0.8538 Z-#<depth> F#<xyspeed>
+G1 X1.3658 Y0.8388 Z-#<depth> F#<xyspeed>
+G1 X1.3584 Y0.8249 Z-#<depth> F#<xyspeed>
+G1 X1.3488 Y0.8123 Z-#<depth> F#<xyspeed>
+G1 X1.3394 Y0.8031 Z-#<depth> F#<xyspeed>
+G1 X1.3290 Y0.7956 Z-#<depth> F#<xyspeed>
+G1 X1.3176 Y0.7898 Z-#<depth> F#<xyspeed>
+G1 X1.3052 Y0.7856 Z-#<depth> F#<xyspeed>
+G1 X1.2918 Y0.7831 Z-#<depth> F#<xyspeed>
+G1 X1.2774 Y0.7823 Z-#<depth> F#<xyspeed>
+G1 X1.2631 Y0.7831 Z-#<depth> F#<xyspeed>
+G1 X1.2498 Y0.7856 Z-#<depth> F#<xyspeed>
+G1 X1.2374 Y0.7898 Z-#<depth> F#<xyspeed>
+G1 X1.2261 Y0.7956 Z-#<depth> F#<xyspeed>
+G1 X1.2157 Y0.8031 Z-#<depth> F#<xyspeed>
+G1 X1.2062 Y0.8122 Z-#<depth> F#<xyspeed>
+G1 X1.1966 Y0.8248 Z-#<depth> F#<xyspeed>
+G1 X1.1891 Y0.8388 Z-#<depth> F#<xyspeed>
+G1 X1.1837 Y0.8542 Z-#<depth> F#<xyspeed>
+G1 X1.1805 Y0.8709 Z-#<depth> F#<xyspeed>
+G1 X1.1794 Y0.8890 Z-#<depth> F#<xyspeed>
+G1 X1.1805 Y0.9071 Z-#<depth> F#<xyspeed>
+G1 X1.1837 Y0.9238 Z-#<depth> F#<xyspeed>
+G1 X1.1891 Y0.9392 Z-#<depth> F#<xyspeed>
+G1 X1.1966 Y0.9531 Z-#<depth> F#<xyspeed>
+G1 X1.2063 Y0.9657 Z-#<depth> F#<xyspeed>
+G0 Z#<safego>
+G0 X1.4075 Y0.7887 Z#<safego>
+G0 X1.4075 Y0.7887 Z#<safego>
+G1 X1.4075 Y0.7887 Z-#<depth> F#<zspeed>
+G1 X1.4075 Y0.9923 Z-#<depth> F#<xyspeed>
+G1 X1.4466 Y0.9923 Z-#<depth> F#<xyspeed>
+G1 X1.4466 Y0.7887 Z-#<depth> F#<xyspeed>
+G1 X1.4075 Y0.7887 Z-#<depth> F#<xyspeed>
+G0 Z#<safego>
+G0 X1.4761 Y0.8619 Z#<safego>
+G0 X1.4761 Y0.8619 Z#<safego>
+G1 X1.4761 Y0.8619 Z-#<depth> F#<zspeed>
+G1 X1.4769 Y0.8751 Z-#<depth> F#<xyspeed>
+G1 X1.4790 Y0.8874 Z-#<depth> F#<xyspeed>
+G1 X1.4827 Y0.8988 Z-#<depth> F#<xyspeed>
+G1 X1.4877 Y0.9094 Z-#<depth> F#<xyspeed>
+G1 X1.4942 Y0.9190 Z-#<depth> F#<xyspeed>
+G1 X1.4996 Y0.9251 Z-#<depth> F#<xyspeed>
+G1 X1.5054 Y0.9303 Z-#<depth> F#<xyspeed>
+G1 X1.5115 Y0.9346 Z-#<depth> F#<xyspeed>
+G1 X1.5179 Y0.9379 Z-#<depth> F#<xyspeed>
+G1 X1.5248 Y0.9402 Z-#<depth> F#<xyspeed>
+G1 X1.5320 Y0.9416 Z-#<depth> F#<xyspeed>
+G1 X1.5395 Y0.9421 Z-#<depth> F#<xyspeed>
+G1 X1.5471 Y0.9417 Z-#<depth> F#<xyspeed>
+G1 X1.5541 Y0.9403 Z-#<depth> F#<xyspeed>
+G1 X1.5606 Y0.9380 Z-#<depth> F#<xyspeed>
+G1 X1.5665 Y0.9349 Z-#<depth> F#<xyspeed>
+G1 X1.5719 Y0.9308 Z-#<depth> F#<xyspeed>
+G1 X1.5768 Y0.9259 Z-#<depth> F#<xyspeed>
+G1 X1.5811 Y0.9200 Z-#<depth> F#<xyspeed>
+G1 X1.5811 Y0.9923 Z-#<depth> F#<xyspeed>
+G1 X1.6202 Y0.9923 Z-#<depth> F#<xyspeed>
+G1 X1.6202 Y0.7887 Z-#<depth> F#<xyspeed>
+G1 X1.5811 Y0.7887 Z-#<depth> F#<xyspeed>
+G1 X1.5811 Y0.8041 Z-#<depth> F#<xyspeed>
+G1 X1.5767 Y0.7983 Z-#<depth> F#<xyspeed>
+G1 X1.5718 Y0.7934 Z-#<depth> F#<xyspeed>
+G1 X1.5664 Y0.7894 Z-#<depth> F#<xyspeed>
+G1 X1.5604 Y0.7863 Z-#<depth> F#<xyspeed>
+G1 X1.5540 Y0.7841 Z-#<depth> F#<xyspeed>
+G1 X1.5470 Y0.7827 Z-#<depth> F#<xyspeed>
+G1 X1.5395 Y0.7823 Z-#<depth> F#<xyspeed>
+G1 X1.5317 Y0.7828 Z-#<depth> F#<xyspeed>
+G1 X1.5244 Y0.7842 Z-#<depth> F#<xyspeed>
+G1 X1.5175 Y0.7865 Z-#<depth> F#<xyspeed>
+G1 X1.5109 Y0.7898 Z-#<depth> F#<xyspeed>
+G1 X1.5048 Y0.7940 Z-#<depth> F#<xyspeed>
+G1 X1.4991 Y0.7991 Z-#<depth> F#<xyspeed>
+G1 X1.4939 Y0.8052 Z-#<depth> F#<xyspeed>
+G1 X1.4875 Y0.8148 Z-#<depth> F#<xyspeed>
+G1 X1.4825 Y0.8253 Z-#<depth> F#<xyspeed>
+G1 X1.4790 Y0.8366 Z-#<depth> F#<xyspeed>
+G1 X1.4769 Y0.8488 Z-#<depth> F#<xyspeed>
+G1 X1.4761 Y0.8619 Z-#<depth> F#<xyspeed>
+G0 Z#<safego>
+G0 X1.5721 Y0.8961 Z#<safego>
+G0 X1.5721 Y0.8961 Z#<safego>
+G1 X1.5721 Y0.8961 Z-#<depth> F#<zspeed>
+G1 X1.5693 Y0.8996 Z-#<depth> F#<xyspeed>
+G1 X1.5664 Y0.9026 Z-#<depth> F#<xyspeed>
+G1 X1.5632 Y0.9050 Z-#<depth> F#<xyspeed>
+G1 X1.5598 Y0.9069 Z-#<depth> F#<xyspeed>
+G1 X1.5561 Y0.9083 Z-#<depth> F#<xyspeed>
+G1 X1.5523 Y0.9091 Z-#<depth> F#<xyspeed>
+G1 X1.5481 Y0.9094 Z-#<depth> F#<xyspeed>
+G1 X1.5441 Y0.9091 Z-#<depth> F#<xyspeed>
+G1 X1.5403 Y0.9083 Z-#<depth> F#<xyspeed>
+G1 X1.5367 Y0.9069 Z-#<depth> F#<xyspeed>
+G1 X1.5333 Y0.9050 Z-#<depth> F#<xyspeed>
+G1 X1.5301 Y0.9026 Z-#<depth> F#<xyspeed>
+G1 X1.5272 Y0.8996 Z-#<depth> F#<xyspeed>
+G1 X1.5244 Y0.8961 Z-#<depth> F#<xyspeed>
+G1 X1.5211 Y0.8905 Z-#<depth> F#<xyspeed>
+G1 X1.5185 Y0.8843 Z-#<depth> F#<xyspeed>
+G1 X1.5167 Y0.8774 Z-#<depth> F#<xyspeed>
+G1 X1.5156 Y0.8700 Z-#<depth> F#<xyspeed>
+G1 X1.5152 Y0.8619 Z-#<depth> F#<xyspeed>
+G1 X1.5156 Y0.8540 Z-#<depth> F#<xyspeed>
+G1 X1.5167 Y0.8466 Z-#<depth> F#<xyspeed>
+G1 X1.5185 Y0.8398 Z-#<depth> F#<xyspeed>
+G1 X1.5211 Y0.8337 Z-#<depth> F#<xyspeed>
+G1 X1.5244 Y0.8281 Z-#<depth> F#<xyspeed>
+G1 X1.5272 Y0.8246 Z-#<depth> F#<xyspeed>
+G1 X1.5301 Y0.8217 Z-#<depth> F#<xyspeed>
+G1 X1.5333 Y0.8193 Z-#<depth> F#<xyspeed>
+G1 X1.5367 Y0.8174 Z-#<depth> F#<xyspeed>
+G1 X1.5403 Y0.8161 Z-#<depth> F#<xyspeed>
+G1 X1.5441 Y0.8153 Z-#<depth> F#<xyspeed>
+G1 X1.5481 Y0.8150 Z-#<depth> F#<xyspeed>
+G1 X1.5522 Y0.8153 Z-#<depth> F#<xyspeed>
+G1 X1.5560 Y0.8161 Z-#<depth> F#<xyspeed>
+G1 X1.5596 Y0.8174 Z-#<depth> F#<xyspeed>
+G1 X1.5630 Y0.8192 Z-#<depth> F#<xyspeed>
+G1 X1.5662 Y0.8216 Z-#<depth> F#<xyspeed>
+G1 X1.5691 Y0.8244 Z-#<depth> F#<xyspeed>
+G1 X1.5719 Y0.8278 Z-#<depth> F#<xyspeed>
+G1 X1.5752 Y0.8333 Z-#<depth> F#<xyspeed>
+G1 X1.5778 Y0.8394 Z-#<depth> F#<xyspeed>
+G1 X1.5797 Y0.8461 Z-#<depth> F#<xyspeed>
+G1 X1.5808 Y0.8534 Z-#<depth> F#<xyspeed>
+G1 X1.5811 Y0.8614 Z-#<depth> F#<xyspeed>
+G1 X1.5808 Y0.8696 Z-#<depth> F#<xyspeed>
+G1 X1.5797 Y0.8772 Z-#<depth> F#<xyspeed>
+G1 X1.5779 Y0.8842 Z-#<depth> F#<xyspeed>
+G1 X1.5753 Y0.8905 Z-#<depth> F#<xyspeed>
+G1 X1.5721 Y0.8961 Z-#<depth> F#<xyspeed>
+G0 Z#<safego>
+G0 X1.7263 Y0.8496 Z#<safego>
+G0 X1.7263 Y0.8496 Z#<safego>
+G1 X1.7263 Y0.8496 Z-#<depth> F#<zspeed>
+G1 X1.7671 Y0.8496 Z-#<depth> F#<xyspeed>
+G1 X1.7677 Y0.8444 Z-#<depth> F#<xyspeed>
+G1 X1.7690 Y0.8395 Z-#<depth> F#<xyspeed>
+G1 X1.7709 Y0.8351 Z-#<depth> F#<xyspeed>
+G1 X1.7733 Y0.8311 Z-#<depth> F#<xyspeed>
+G1 X1.7763 Y0.8276 Z-#<depth> F#<xyspeed>
+G1 X1.7800 Y0.8245 Z-#<depth> F#<xyspeed>
+G1 X1.7850 Y0.8214 Z-#<depth> F#<xyspeed>
+G1 X1.7909 Y0.8189 Z-#<depth> F#<xyspeed>
+G1 X1.7974 Y0.8172 Z-#<depth> F#<xyspeed>
+G1 X1.8048 Y0.8162 Z-#<depth> F#<xyspeed>
+G1 X1.8129 Y0.8158 Z-#<depth> F#<xyspeed>
+G1 X1.8202 Y0.8161 Z-#<depth> F#<xyspeed>
+G1 X1.8268 Y0.8170 Z-#<depth> F#<xyspeed>
+G1 X1.8328 Y0.8184 Z-#<depth> F#<xyspeed>
+G1 X1.8382 Y0.8205 Z-#<depth> F#<xyspeed>
+G1 X1.8429 Y0.8231 Z-#<depth> F#<xyspeed>
+G1 X1.8458 Y0.8253 Z-#<depth> F#<xyspeed>
+G1 X1.8483 Y0.8277 Z-#<depth> F#<xyspeed>
+G1 X1.8503 Y0.8304 Z-#<depth> F#<xyspeed>
+G1 X1.8519 Y0.8332 Z-#<depth> F#<xyspeed>
+G1 X1.8531 Y0.8363 Z-#<depth> F#<xyspeed>
+G1 X1.8537 Y0.8396 Z-#<depth> F#<xyspeed>
+G1 X1.8540 Y0.8432 Z-#<depth> F#<xyspeed>
+G1 X1.8538 Y0.8466 Z-#<depth> F#<xyspeed>
+G1 X1.8533 Y0.8498 Z-#<depth> F#<xyspeed>
+G1 X1.8524 Y0.8527 Z-#<depth> F#<xyspeed>
+G1 X1.8511 Y0.8554 Z-#<depth> F#<xyspeed>
+G1 X1.8495 Y0.8579 Z-#<depth> F#<xyspeed>
+G1 X1.8476 Y0.8602 Z-#<depth> F#<xyspeed>
+G1 X1.8452 Y0.8622 Z-#<depth> F#<xyspeed>
+G1 X1.8420 Y0.8644 Z-#<depth> F#<xyspeed>
+G1 X1.8381 Y0.8664 Z-#<depth> F#<xyspeed>
+G1 X1.8335 Y0.8682 Z-#<depth> F#<xyspeed>
+G1 X1.8283 Y0.8699 Z-#<depth> F#<xyspeed>
+G1 X1.8223 Y0.8714 Z-#<depth> F#<xyspeed>
+G1 X1.8157 Y0.8728 Z-#<depth> F#<xyspeed>
+G1 X1.7872 Y0.8784 Z-#<depth> F#<xyspeed>
+G1 X1.7756 Y0.8810 Z-#<depth> F#<xyspeed>
+G1 X1.7653 Y0.8842 Z-#<depth> F#<xyspeed>
+G1 X1.7565 Y0.8879 Z-#<depth> F#<xyspeed>
+G1 X1.7490 Y0.8921 Z-#<depth> F#<xyspeed>
+G1 X1.7431 Y0.8968 Z-#<depth> F#<xyspeed>
+G1 X1.7391 Y0.9013 Z-#<depth> F#<xyspeed>
+G1 X1.7358 Y0.9064 Z-#<depth> F#<xyspeed>
+G1 X1.7332 Y0.9122 Z-#<depth> F#<xyspeed>
+G1 X1.7314 Y0.9185 Z-#<depth> F#<xyspeed>
+G1 X1.7303 Y0.9255 Z-#<depth> F#<xyspeed>
+G1 X1.7300 Y0.9331 Z-#<depth> F#<xyspeed>
+G1 X1.7304 Y0.9414 Z-#<depth> F#<xyspeed>
+G1 X1.7316 Y0.9491 Z-#<depth> F#<xyspeed>
+G1 X1.7337 Y0.9562 Z-#<depth> F#<xyspeed>
+G1 X1.7366 Y0.9628 Z-#<depth> F#<xyspeed>
+G1 X1.7403 Y0.9689 Z-#<depth> F#<xyspeed>
+G1 X1.7448 Y0.9744 Z-#<depth> F#<xyspeed>
+G1 X1.7501 Y0.9793 Z-#<depth> F#<xyspeed>
+G1 X1.7589 Y0.9852 Z-#<depth> F#<xyspeed>
+G1 X1.7690 Y0.9898 Z-#<depth> F#<xyspeed>
+G1 X1.7804 Y0.9930 Z-#<depth> F#<xyspeed>
+G1 X1.7931 Y0.9950 Z-#<depth> F#<xyspeed>
+G1 X1.8071 Y0.9956 Z-#<depth> F#<xyspeed>
+G1 X1.8275 Y0.9943 Z-#<depth> F#<xyspeed>
+G1 X1.8378 Y0.9922 Z-#<depth> F#<xyspeed>
+G1 X1.8486 Y0.9886 Z-#<depth> F#<xyspeed>
+G1 X1.8557 Y0.9854 Z-#<depth> F#<xyspeed>
+G1 X1.8621 Y0.9816 Z-#<depth> F#<xyspeed>
+G1 X1.8679 Y0.9774 Z-#<depth> F#<xyspeed>
+G1 X1.8718 Y0.9736 Z-#<depth> F#<xyspeed>
+G1 X1.8753 Y0.9692 Z-#<depth> F#<xyspeed>
+G1 X1.8785 Y0.9641 Z-#<depth> F#<xyspeed>
+G1 X1.8814 Y0.9584 Z-#<depth> F#<xyspeed>
+G1 X1.8845 Y0.9499 Z-#<depth> F#<xyspeed>
+G1 X1.8863 Y0.9406 Z-#<depth> F#<xyspeed>
+G1 X1.8869 Y0.9304 Z-#<depth> F#<xyspeed>
+G1 X1.8478 Y0.9304 Z-#<depth> F#<xyspeed>
+G1 X1.8472 Y0.9355 Z-#<depth> F#<xyspeed>
+G1 X1.8460 Y0.9401 Z-#<depth> F#<xyspeed>
+G1 X1.8443 Y0.9443 Z-#<depth> F#<xyspeed>
+G1 X1.8421 Y0.9481 Z-#<depth> F#<xyspeed>
+G1 X1.8393 Y0.9514 Z-#<depth> F#<xyspeed>
+G1 X1.8360 Y0.9542 Z-#<depth> F#<xyspeed>
+G1 X1.8322 Y0.9567 Z-#<depth> F#<xyspeed>
+G1 X1.8278 Y0.9587 Z-#<depth> F#<xyspeed>
+G1 X1.8229 Y0.9602 Z-#<depth> F#<xyspeed>
+G1 X1.8175 Y0.9613 Z-#<depth> F#<xyspeed>
+G1 X1.8115 Y0.9620 Z-#<depth> F#<xyspeed>
+G1 X1.8051 Y0.9622 Z-#<depth> F#<xyspeed>
+G1 X1.7988 Y0.9619 Z-#<depth> F#<xyspeed>
+G1 X1.7932 Y0.9611 Z-#<depth> F#<xyspeed>
+G1 X1.7880 Y0.9597 Z-#<depth> F#<xyspeed>
+G1 X1.7834 Y0.9578 Z-#<depth> F#<xyspeed>
+G1 X1.7793 Y0.9553 Z-#<depth> F#<xyspeed>
+G1 X1.7768 Y0.9532 Z-#<depth> F#<xyspeed>
+G1 X1.7747 Y0.9510 Z-#<depth> F#<xyspeed>
+G1 X1.7730 Y0.9486 Z-#<depth> F#<xyspeed>
+G1 X1.7716 Y0.9460 Z-#<depth> F#<xyspeed>
+G1 X1.7706 Y0.9432 Z-#<depth> F#<xyspeed>
+G1 X1.7701 Y0.9402 Z-#<depth> F#<xyspeed>
+G1 X1.7699 Y0.9370 Z-#<depth> F#<xyspeed>
+G1 X1.7700 Y0.9339 Z-#<depth> F#<xyspeed>
+G1 X1.7705 Y0.9311 Z-#<depth> F#<xyspeed>
+G1 X1.7714 Y0.9285 Z-#<depth> F#<xyspeed>
+G1 X1.7725 Y0.9261 Z-#<depth> F#<xyspeed>
+G1 X1.7740 Y0.9240 Z-#<depth> F#<xyspeed>
+G1 X1.7758 Y0.9221 Z-#<depth> F#<xyspeed>
+G1 X1.7780 Y0.9204 Z-#<depth> F#<xyspeed>
+G1 X1.7811 Y0.9186 Z-#<depth> F#<xyspeed>
+G1 X1.7849 Y0.9169 Z-#<depth> F#<xyspeed>
+G1 X1.7896 Y0.9152 Z-#<depth> F#<xyspeed>
+G1 X1.7951 Y0.9136 Z-#<depth> F#<xyspeed>
+G1 X1.8014 Y0.9120 Z-#<depth> F#<xyspeed>
+G1 X1.8084 Y0.9105 Z-#<depth> F#<xyspeed>
+G1 X1.8402 Y0.9044 Z-#<depth> F#<xyspeed>
+G1 X1.8509 Y0.9018 Z-#<depth> F#<xyspeed>
+G1 X1.8604 Y0.8986 Z-#<depth> F#<xyspeed>
+G1 X1.8686 Y0.8949 Z-#<depth> F#<xyspeed>
+G1 X1.8756 Y0.8905 Z-#<depth> F#<xyspeed>
+G1 X1.8813 Y0.8855 Z-#<depth> F#<xyspeed>
+G1 X1.8852 Y0.8808 Z-#<depth> F#<xyspeed>
+G1 X1.8885 Y0.8755 Z-#<depth> F#<xyspeed>
+G1 X1.8909 Y0.8696 Z-#<depth> F#<xyspeed>
+G1 X1.8927 Y0.8630 Z-#<depth> F#<xyspeed>
+G1 X1.8938 Y0.8559 Z-#<depth> F#<xyspeed>
+G1 X1.8941 Y0.8482 Z-#<depth> F#<xyspeed>
+G1 X1.8937 Y0.8396 Z-#<depth> F#<xyspeed>
+G1 X1.8923 Y0.8316 Z-#<depth> F#<xyspeed>
+G1 X1.8901 Y0.8241 Z-#<depth> F#<xyspeed>
+G1 X1.8869 Y0.8172 Z-#<depth> F#<xyspeed>
+G1 X1.8829 Y0.8108 Z-#<depth> F#<xyspeed>
+G1 X1.8779 Y0.8050 Z-#<depth> F#<xyspeed>
+G1 X1.8721 Y0.7997 Z-#<depth> F#<xyspeed>
+G1 X1.8626 Y0.7935 Z-#<depth> F#<xyspeed>
+G1 X1.8517 Y0.7886 Z-#<depth> F#<xyspeed>
+G1 X1.8394 Y0.7851 Z-#<depth> F#<xyspeed>
+G1 X1.8257 Y0.7830 Z-#<depth> F#<xyspeed>
+G1 X1.8107 Y0.7823 Z-#<depth> F#<xyspeed>
+G1 X1.7958 Y0.7830 Z-#<depth> F#<xyspeed>
+G1 X1.7822 Y0.7850 Z-#<depth> F#<xyspeed>
+G1 X1.7700 Y0.7885 Z-#<depth> F#<xyspeed>
+G1 X1.7593 Y0.7933 Z-#<depth> F#<xyspeed>
+G1 X1.7499 Y0.7996 Z-#<depth> F#<xyspeed>
+G1 X1.7432 Y0.8058 Z-#<depth> F#<xyspeed>
+G1 X1.7376 Y0.8128 Z-#<depth> F#<xyspeed>
+G1 X1.7332 Y0.8208 Z-#<depth> F#<xyspeed>
+G1 X1.7298 Y0.8295 Z-#<depth> F#<xyspeed>
+G1 X1.7275 Y0.8392 Z-#<depth> F#<xyspeed>
+G1 X1.7263 Y0.8496 Z-#<depth> F#<xyspeed>
+G0 Z#<safego>
+G0 X2.0085 Y0.9421 Z#<safego>
+G0 X2.0085 Y0.9421 Z#<safego>
+G1 X2.0085 Y0.9421 Z-#<depth> F#<zspeed>
+G1 X2.0172 Y0.9415 Z-#<depth> F#<xyspeed>
+G1 X2.0254 Y0.9396 Z-#<depth> F#<xyspeed>
+G1 X2.0307 Y0.9377 Z-#<depth> F#<xyspeed>
+G1 X2.0359 Y0.9351 Z-#<depth> F#<xyspeed>
+G1 X2.0411 Y0.9318 Z-#<depth> F#<xyspeed>
+G1 X2.0447 Y0.9288 Z-#<depth> F#<xyspeed>
+G1 X2.0480 Y0.9250 Z-#<depth> F#<xyspeed>
+G1 X2.0508 Y0.9206 Z-#<depth> F#<xyspeed>
+G1 X2.0532 Y0.9155 Z-#<depth> F#<xyspeed>
+G1 X2.0557 Y0.9078 Z-#<depth> F#<xyspeed>
+G1 X2.0572 Y0.8993 Z-#<depth> F#<xyspeed>
+G1 X2.0577 Y0.8898 Z-#<depth> F#<xyspeed>
+G1 X2.0577 Y0.7887 Z-#<depth> F#<xyspeed>
+G1 X2.0186 Y0.7887 Z-#<depth> F#<xyspeed>
+G1 X2.0186 Y0.8809 Z-#<depth> F#<xyspeed>
+G1 X2.0185 Y0.8851 Z-#<depth> F#<xyspeed>
+G1 X2.0180 Y0.8888 Z-#<depth> F#<xyspeed>
+G1 X2.0173 Y0.8923 Z-#<depth> F#<xyspeed>
+G1 X2.0163 Y0.8955 Z-#<depth> F#<xyspeed>
+G1 X2.0151 Y0.8983 Z-#<depth> F#<xyspeed>
+G1 X2.0135 Y0.9007 Z-#<depth> F#<xyspeed>
+G1 X2.0116 Y0.9029 Z-#<depth> F#<xyspeed>
+G1 X2.0095 Y0.9047 Z-#<depth> F#<xyspeed>
+G1 X2.0071 Y0.9062 Z-#<depth> F#<xyspeed>
+G1 X2.0044 Y0.9073 Z-#<depth> F#<xyspeed>
+G1 X2.0014 Y0.9082 Z-#<depth> F#<xyspeed>
+G1 X1.9982 Y0.9087 Z-#<depth> F#<xyspeed>
+G1 X1.9946 Y0.9088 Z-#<depth> F#<xyspeed>
+G1 X1.9903 Y0.9086 Z-#<depth> F#<xyspeed>
+G1 X1.9863 Y0.9079 Z-#<depth> F#<xyspeed>
+G1 X1.9826 Y0.9067 Z-#<depth> F#<xyspeed>
+G1 X1.9791 Y0.9051 Z-#<depth> F#<xyspeed>
+G1 X1.9759 Y0.9030 Z-#<depth> F#<xyspeed>
+G1 X1.9729 Y0.9005 Z-#<depth> F#<xyspeed>
+G1 X1.9703 Y0.8976 Z-#<depth> F#<xyspeed>
+G1 X1.9682 Y0.8944 Z-#<depth> F#<xyspeed>
+G1 X1.9665 Y0.8910 Z-#<depth> F#<xyspeed>
+G1 X1.9654 Y0.8873 Z-#<depth> F#<xyspeed>
+G1 X1.9647 Y0.8834 Z-#<depth> F#<xyspeed>
+G1 X1.9644 Y0.8792 Z-#<depth> F#<xyspeed>
+G1 X1.9644 Y0.7887 Z-#<depth> F#<xyspeed>
+G1 X1.9253 Y0.7887 Z-#<depth> F#<xyspeed>
+G1 X1.9253 Y0.9923 Z-#<depth> F#<xyspeed>
+G1 X1.9644 Y0.9923 Z-#<depth> F#<xyspeed>
+G1 X1.9644 Y0.9177 Z-#<depth> F#<xyspeed>
+G1 X1.9693 Y0.9242 Z-#<depth> F#<xyspeed>
+G1 X1.9746 Y0.9297 Z-#<depth> F#<xyspeed>
+G1 X1.9804 Y0.9341 Z-#<depth> F#<xyspeed>
+G1 X1.9867 Y0.9376 Z-#<depth> F#<xyspeed>
+G1 X1.9935 Y0.9401 Z-#<depth> F#<xyspeed>
+G1 X2.0008 Y0.9416 Z-#<depth> F#<xyspeed>
+G1 X2.0085 Y0.9421 Z-#<depth> F#<xyspeed>
+G0 Z#<safego>
+G0 X2.1446 Y0.7823 Z#<safego>
+G0 X2.1446 Y0.7823 Z#<safego>
+G1 X2.1446 Y0.7823 Z-#<depth> F#<zspeed>
+G1 X2.1369 Y0.7827 Z-#<depth> F#<xyspeed>
+G1 X2.1298 Y0.7838 Z-#<depth> F#<xyspeed>
+G1 X2.1233 Y0.7857 Z-#<depth> F#<xyspeed>
+G1 X2.1174 Y0.7883 Z-#<depth> F#<xyspeed>
+G1 X2.1121 Y0.7918 Z-#<depth> F#<xyspeed>
+G1 X2.1073 Y0.7959 Z-#<depth> F#<xyspeed>
+G1 X2.1033 Y0.8008 Z-#<depth> F#<xyspeed>
+G1 X2.1000 Y0.8063 Z-#<depth> F#<xyspeed>
+G1 X2.0974 Y0.8124 Z-#<depth> F#<xyspeed>
+G1 X2.0955 Y0.8192 Z-#<depth> F#<xyspeed>
+G1 X2.0944 Y0.8266 Z-#<depth> F#<xyspeed>
+G1 X2.0941 Y0.8346 Z-#<depth> F#<xyspeed>
+G1 X2.0941 Y0.9396 Z-#<depth> F#<xyspeed>
+G1 X2.1331 Y0.9396 Z-#<depth> F#<xyspeed>
+G1 X2.1331 Y0.8426 Z-#<depth> F#<xyspeed>
+G1 X2.1333 Y0.8386 Z-#<depth> F#<xyspeed>
+G1 X2.1337 Y0.8350 Z-#<depth> F#<xyspeed>
+G1 X2.1345 Y0.8316 Z-#<depth> F#<xyspeed>
+G1 X2.1355 Y0.8285 Z-#<depth> F#<xyspeed>
+G1 X2.1369 Y0.8258 Z-#<depth> F#<xyspeed>
+G1 X2.1385 Y0.8234 Z-#<depth> F#<xyspeed>
+G1 X2.1404 Y0.8213 Z-#<depth> F#<xyspeed>
+G1 X2.1426 Y0.8196 Z-#<depth> F#<xyspeed>
+G1 X2.1452 Y0.8181 Z-#<depth> F#<xyspeed>
+G1 X2.1480 Y0.8170 Z-#<depth> F#<xyspeed>
+G1 X2.1511 Y0.8162 Z-#<depth> F#<xyspeed>
+G1 X2.1545 Y0.8157 Z-#<depth> F#<xyspeed>
+G1 X2.1582 Y0.8156 Z-#<depth> F#<xyspeed>
+G1 X2.1628 Y0.8158 Z-#<depth> F#<xyspeed>
+G1 X2.1671 Y0.8165 Z-#<depth> F#<xyspeed>
+G1 X2.1711 Y0.8176 Z-#<depth> F#<xyspeed>
+G1 X2.1748 Y0.8192 Z-#<depth> F#<xyspeed>
+G1 X2.1781 Y0.8212 Z-#<depth> F#<xyspeed>
+G1 X2.1811 Y0.8236 Z-#<depth> F#<xyspeed>
+G1 X2.1838 Y0.8265 Z-#<depth> F#<xyspeed>
+G1 X2.1859 Y0.8296 Z-#<depth> F#<xyspeed>
+G1 X2.1876 Y0.8331 Z-#<depth> F#<xyspeed>
+G1 X2.1888 Y0.8368 Z-#<depth> F#<xyspeed>
+G1 X2.1895 Y0.8409 Z-#<depth> F#<xyspeed>
+G1 X2.1898 Y0.8452 Z-#<depth> F#<xyspeed>
+G1 X2.1898 Y0.9396 Z-#<depth> F#<xyspeed>
+G1 X2.2289 Y0.9396 Z-#<depth> F#<xyspeed>
+G1 X2.2289 Y0.7887 Z-#<depth> F#<xyspeed>
+G1 X2.1898 Y0.7887 Z-#<depth> F#<xyspeed>
+G1 X2.1898 Y0.8066 Z-#<depth> F#<xyspeed>
+G1 X2.1849 Y0.8002 Z-#<depth> F#<xyspeed>
+G1 X2.1795 Y0.7947 Z-#<depth> F#<xyspeed>
+G1 X2.1736 Y0.7902 Z-#<depth> F#<xyspeed>
+G1 X2.1671 Y0.7868 Z-#<depth> F#<xyspeed>
+G1 X2.1601 Y0.7843 Z-#<depth> F#<xyspeed>
+G1 X2.1526 Y0.7828 Z-#<depth> F#<xyspeed>
+G1 X2.1446 Y0.7823 Z-#<depth> F#<xyspeed>
+G0 Z#<safego>
+G0 X2.2697 Y0.9200 Z#<safego>
+G0 X2.2697 Y0.9200 Z#<safego>
+G1 X2.2697 Y0.9200 Z-#<depth> F#<zspeed>
+G1 X2.2586 Y0.9560 Z-#<depth> F#<xyspeed>
+G1 X2.2586 Y0.9923 Z-#<depth> F#<xyspeed>
+G1 X2.2971 Y0.9923 Z-#<depth> F#<xyspeed>
+G1 X2.2971 Y0.9560 Z-#<depth> F#<xyspeed>
+G1 X2.2854 Y0.9200 Z-#<depth> F#<xyspeed>
+G1 X2.2697 Y0.9200 Z-#<depth> F#<xyspeed>
+G0 Z#<safego>
+G0 X2.3513 Y0.9200 Z#<safego>
+G0 X2.3513 Y0.9200 Z#<safego>
+G1 X2.3513 Y0.9200 Z-#<depth> F#<zspeed>
+G1 X2.3356 Y0.9200 Z-#<depth> F#<xyspeed>
+G1 X2.3245 Y0.9560 Z-#<depth> F#<xyspeed>
+G1 X2.3245 Y0.9923 Z-#<depth> F#<xyspeed>
+G1 X2.3631 Y0.9923 Z-#<depth> F#<xyspeed>
+G1 X2.3631 Y0.9560 Z-#<depth> F#<xyspeed>
+G1 X2.3513 Y0.9200 Z-#<depth> F#<xyspeed>
+G0 Z#<safego>
+G0 X1.9585 Y0.5184 Z#<safego>
+G0 X1.9585 Y0.5184 Z#<safego>
+G1 X1.9585 Y0.5184 Z-#<depth> F#<zspeed>
+G1 X1.9581 Y0.5186 Z-#<depth> F#<xyspeed>
+G1 X1.9575 Y0.5188 Z-#<depth> F#<xyspeed>
+G1 X1.9568 Y0.5191 Z-#<depth> F#<xyspeed>
+G1 X1.9560 Y0.5195 Z-#<depth> F#<xyspeed>
+G1 X1.9551 Y0.5198 Z-#<depth> F#<xyspeed>
+G1 X1.9540 Y0.5202 Z-#<depth> F#<xyspeed>
+G1 X1.9524 Y0.5208 Z-#<depth> F#<xyspeed>
+G1 X1.9510 Y0.5215 Z-#<depth> F#<xyspeed>
+G1 X1.9498 Y0.5221 Z-#<depth> F#<xyspeed>
+G1 X1.9488 Y0.5228 Z-#<depth> F#<xyspeed>
+G1 X1.9475 Y0.5239 Z-#<depth> F#<xyspeed>
+G1 X1.9459 Y0.5250 Z-#<depth> F#<xyspeed>
+G1 X1.9442 Y0.5264 Z-#<depth> F#<xyspeed>
+G1 X1.9425 Y0.5278 Z-#<depth> F#<xyspeed>
+G1 X1.9411 Y0.5294 Z-#<depth> F#<xyspeed>
+G1 X1.9399 Y0.5310 Z-#<depth> F#<xyspeed>
+G1 X1.9383 Y0.5337 Z-#<depth> F#<xyspeed>
+G1 X1.9366 Y0.5367 Z-#<depth> F#<xyspeed>
+G1 X1.9356 Y0.5390 Z-#<depth> F#<xyspeed>
+G1 X1.9348 Y0.5414 Z-#<depth> F#<xyspeed>
+G1 X1.9342 Y0.5441 Z-#<depth> F#<xyspeed>
+G1 X1.9336 Y0.5484 Z-#<depth> F#<xyspeed>
+G1 X1.9334 Y0.5531 Z-#<depth> F#<xyspeed>
+G1 X1.9338 Y0.5606 Z-#<depth> F#<xyspeed>
+G1 X1.9352 Y0.5675 Z-#<depth> F#<xyspeed>
+G1 X1.9375 Y0.5739 Z-#<depth> F#<xyspeed>
+G1 X1.9407 Y0.5797 Z-#<depth> F#<xyspeed>
+G1 X1.9449 Y0.5850 Z-#<depth> F#<xyspeed>
+G1 X1.9499 Y0.5898 Z-#<depth> F#<xyspeed>
+G1 X1.9570 Y0.5947 Z-#<depth> F#<xyspeed>
+G1 X1.9652 Y0.5985 Z-#<depth> F#<xyspeed>
+G1 X1.9743 Y0.6012 Z-#<depth> F#<xyspeed>
+G1 X1.9843 Y0.6028 Z-#<depth> F#<xyspeed>
+G1 X1.9954 Y0.6034 Z-#<depth> F#<xyspeed>
+G1 X2.0070 Y0.6028 Z-#<depth> F#<xyspeed>
+G1 X2.0176 Y0.6012 Z-#<depth> F#<xyspeed>
+G1 X2.0271 Y0.5985 Z-#<depth> F#<xyspeed>
+G1 X2.0356 Y0.5947 Z-#<depth> F#<xyspeed>
+G1 X2.0430 Y0.5898 Z-#<depth> F#<xyspeed>
+G1 X2.0483 Y0.5850 Z-#<depth> F#<xyspeed>
+G1 X2.0527 Y0.5796 Z-#<depth> F#<xyspeed>
+G1 X2.0562 Y0.5736 Z-#<depth> F#<xyspeed>
+G1 X2.0587 Y0.5671 Z-#<depth> F#<xyspeed>
+G1 X2.0603 Y0.5599 Z-#<depth> F#<xyspeed>
+G1 X2.0609 Y0.5522 Z-#<depth> F#<xyspeed>
+G1 X2.0233 Y0.5522 Z-#<depth> F#<xyspeed>
+G1 X2.0231 Y0.5552 Z-#<depth> F#<xyspeed>
+G1 X2.0225 Y0.5580 Z-#<depth> F#<xyspeed>
+G1 X2.0217 Y0.5605 Z-#<depth> F#<xyspeed>
+G1 X2.0205 Y0.5628 Z-#<depth> F#<xyspeed>
+G1 X2.0190 Y0.5649 Z-#<depth> F#<xyspeed>
+G1 X2.0171 Y0.5667 Z-#<depth> F#<xyspeed>
+G1 X2.0149 Y0.5683 Z-#<depth> F#<xyspeed>
+G1 X2.0124 Y0.5696 Z-#<depth> F#<xyspeed>
+G1 X2.0096 Y0.5707 Z-#<depth> F#<xyspeed>
+G1 X2.0064 Y0.5715 Z-#<depth> F#<xyspeed>
+G1 X2.0030 Y0.5722 Z-#<depth> F#<xyspeed>
+G1 X1.9991 Y0.5725 Z-#<depth> F#<xyspeed>
+G1 X1.9950 Y0.5726 Z-#<depth> F#<xyspeed>
+G1 X1.9911 Y0.5725 Z-#<depth> F#<xyspeed>
+G1 X1.9874 Y0.5720 Z-#<depth> F#<xyspeed>
+G1 X1.9841 Y0.5713 Z-#<depth> F#<xyspeed>
+G1 X1.9812 Y0.5702 Z-#<depth> F#<xyspeed>
+G1 X1.9785 Y0.5688 Z-#<depth> F#<xyspeed>
+G1 X1.9771 Y0.5678 Z-#<depth> F#<xyspeed>
+G1 X1.9759 Y0.5668 Z-#<depth> F#<xyspeed>
+G1 X1.9748 Y0.5656 Z-#<depth> F#<xyspeed>
+G1 X1.9740 Y0.5644 Z-#<depth> F#<xyspeed>
+G1 X1.9733 Y0.5631 Z-#<depth> F#<xyspeed>
+G1 X1.9728 Y0.5617 Z-#<depth> F#<xyspeed>
+G1 X1.9725 Y0.5602 Z-#<depth> F#<xyspeed>
+G1 X1.9725 Y0.5586 Z-#<depth> F#<xyspeed>
+G1 X1.9725 Y0.5572 Z-#<depth> F#<xyspeed>
+G1 X1.9728 Y0.5559 Z-#<depth> F#<xyspeed>
+G1 X1.9731 Y0.5547 Z-#<depth> F#<xyspeed>
+G1 X1.9737 Y0.5536 Z-#<depth> F#<xyspeed>
+G1 X1.9743 Y0.5527 Z-#<depth> F#<xyspeed>
+G1 X1.9752 Y0.5518 Z-#<depth> F#<xyspeed>
+G1 X1.9763 Y0.5510 Z-#<depth> F#<xyspeed>
+G1 X1.9776 Y0.5502 Z-#<depth> F#<xyspeed>
+G1 X1.9793 Y0.5494 Z-#<depth> F#<xyspeed>
+G1 X1.9813 Y0.5486 Z-#<depth> F#<xyspeed>
+G1 X1.9835 Y0.5478 Z-#<depth> F#<xyspeed>
+G1 X1.9861 Y0.5469 Z-#<depth> F#<xyspeed>
+G1 X2.0355 Y0.5326 Z-#<depth> F#<xyspeed>
+G1 X2.0412 Y0.5307 Z-#<depth> F#<xyspeed>
+G1 X2.0462 Y0.5284 Z-#<depth> F#<xyspeed>
+G1 X2.0507 Y0.5256 Z-#<depth> F#<xyspeed>
+G1 X2.0545 Y0.5224 Z-#<depth> F#<xyspeed>
+G1 X2.0578 Y0.5188 Z-#<depth> F#<xyspeed>
+G1 X2.0604 Y0.5148 Z-#<depth> F#<xyspeed>
+G1 X2.0625 Y0.5104 Z-#<depth> F#<xyspeed>
+G1 X2.0640 Y0.5056 Z-#<depth> F#<xyspeed>
+G1 X2.0649 Y0.5004 Z-#<depth> F#<xyspeed>
+G1 X2.0652 Y0.4947 Z-#<depth> F#<xyspeed>
+G1 X2.0648 Y0.4890 Z-#<depth> F#<xyspeed>
+G1 X2.0638 Y0.4833 Z-#<depth> F#<xyspeed>
+G1 X2.0621 Y0.4777 Z-#<depth> F#<xyspeed>
+G1 X2.0596 Y0.4723 Z-#<depth> F#<xyspeed>
+G1 X2.0563 Y0.4669 Z-#<depth> F#<xyspeed>
+G1 X2.0521 Y0.4615 Z-#<depth> F#<xyspeed>
+G1 X2.0482 Y0.4576 Z-#<depth> F#<xyspeed>
+G1 X2.0435 Y0.4542 Z-#<depth> F#<xyspeed>
+G1 X2.0380 Y0.4511 Z-#<depth> F#<xyspeed>
+G1 X2.0315 Y0.4485 Z-#<depth> F#<xyspeed>
+G1 X2.0219 Y0.4457 Z-#<depth> F#<xyspeed>
+G1 X2.0111 Y0.4441 Z-#<depth> F#<xyspeed>
+G1 X1.9993 Y0.4435 Z-#<depth> F#<xyspeed>
+G1 X1.9890 Y0.4438 Z-#<depth> F#<xyspeed>
+G1 X1.9795 Y0.4447 Z-#<depth> F#<xyspeed>
+G1 X1.9708 Y0.4462 Z-#<depth> F#<xyspeed>
+G1 X1.9629 Y0.4483 Z-#<depth> F#<xyspeed>
+G1 X1.9558 Y0.4510 Z-#<depth> F#<xyspeed>
+G1 X1.9495 Y0.4543 Z-#<depth> F#<xyspeed>
+G1 X1.9440 Y0.4581 Z-#<depth> F#<xyspeed>
+G1 X1.9394 Y0.4626 Z-#<depth> F#<xyspeed>
+G1 X1.9355 Y0.4676 Z-#<depth> F#<xyspeed>
+G1 X1.9324 Y0.4733 Z-#<depth> F#<xyspeed>
+G1 X1.9301 Y0.4795 Z-#<depth> F#<xyspeed>
+G1 X1.9287 Y0.4864 Z-#<depth> F#<xyspeed>
+G1 X1.9280 Y0.4938 Z-#<depth> F#<xyspeed>
+G1 X1.9663 Y0.4938 Z-#<depth> F#<xyspeed>
+G1 X1.9672 Y0.4902 Z-#<depth> F#<xyspeed>
+G1 X1.9685 Y0.4870 Z-#<depth> F#<xyspeed>
+G1 X1.9701 Y0.4840 Z-#<depth> F#<xyspeed>
+G1 X1.9720 Y0.4815 Z-#<depth> F#<xyspeed>
+G1 X1.9743 Y0.4793 Z-#<depth> F#<xyspeed>
+G1 X1.9762 Y0.4779 Z-#<depth> F#<xyspeed>
+G1 X1.9786 Y0.4768 Z-#<depth> F#<xyspeed>
+G1 X1.9814 Y0.4759 Z-#<depth> F#<xyspeed>
+G1 X1.9846 Y0.4752 Z-#<depth> F#<xyspeed>
+G1 X1.9883 Y0.4747 Z-#<depth> F#<xyspeed>
+G1 X1.9924 Y0.4744 Z-#<depth> F#<xyspeed>
+G1 X1.9970 Y0.4743 Z-#<depth> F#<xyspeed>
+G1 X2.0022 Y0.4744 Z-#<depth> F#<xyspeed>
+G1 X2.0069 Y0.4749 Z-#<depth> F#<xyspeed>
+G1 X2.0112 Y0.4757 Z-#<depth> F#<xyspeed>
+G1 X2.0150 Y0.4768 Z-#<depth> F#<xyspeed>
+G1 X2.0183 Y0.4782 Z-#<depth> F#<xyspeed>
+G1 X2.0201 Y0.4792 Z-#<depth> F#<xyspeed>
+G1 X2.0217 Y0.4803 Z-#<depth> F#<xyspeed>
+G1 X2.0230 Y0.4815 Z-#<depth> F#<xyspeed>
+G1 X2.0241 Y0.4829 Z-#<depth> F#<xyspeed>
+G1 X2.0249 Y0.4843 Z-#<depth> F#<xyspeed>
+G1 X2.0255 Y0.4858 Z-#<depth> F#<xyspeed>
+G1 X2.0259 Y0.4874 Z-#<depth> F#<xyspeed>
+G1 X2.0260 Y0.4891 Z-#<depth> F#<xyspeed>
+G1 X2.0259 Y0.4905 Z-#<depth> F#<xyspeed>
+G1 X2.0257 Y0.4919 Z-#<depth> F#<xyspeed>
+G1 X2.0253 Y0.4931 Z-#<depth> F#<xyspeed>
+G1 X2.0247 Y0.4943 Z-#<depth> F#<xyspeed>
+G1 X2.0240 Y0.4954 Z-#<depth> F#<xyspeed>
+G1 X2.0231 Y0.4964 Z-#<depth> F#<xyspeed>
+G1 X2.0218 Y0.4975 Z-#<depth> F#<xyspeed>
+G1 X2.0201 Y0.4985 Z-#<depth> F#<xyspeed>
+G1 X2.0180 Y0.4995 Z-#<depth> F#<xyspeed>
+G1 X2.0156 Y0.5005 Z-#<depth> F#<xyspeed>
+G1 X2.0129 Y0.5014 Z-#<depth> F#<xyspeed>
+G1 X1.9663 Y0.5159 Z-#<depth> F#<xyspeed>
+G1 X1.9662 Y0.5159 Z-#<depth> F#<xyspeed>
+G1 X1.9661 Y0.5159 Z-#<depth> F#<xyspeed>
+G1 X1.9659 Y0.5160 Z-#<depth> F#<xyspeed>
+G1 X1.9657 Y0.5160 Z-#<depth> F#<xyspeed>
+G1 X1.9654 Y0.5161 Z-#<depth> F#<xyspeed>
+G1 X1.9651 Y0.5162 Z-#<depth> F#<xyspeed>
+G1 X1.9648 Y0.5163 Z-#<depth> F#<xyspeed>
+G1 X1.9644 Y0.5164 Z-#<depth> F#<xyspeed>
+G1 X1.9639 Y0.5165 Z-#<depth> F#<xyspeed>
+G1 X1.9634 Y0.5167 Z-#<depth> F#<xyspeed>
+G1 X1.9629 Y0.5168 Z-#<depth> F#<xyspeed>
+G1 X1.9619 Y0.5171 Z-#<depth> F#<xyspeed>
+G1 X1.9610 Y0.5174 Z-#<depth> F#<xyspeed>
+G1 X1.9603 Y0.5177 Z-#<depth> F#<xyspeed>
+G1 X1.9596 Y0.5179 Z-#<depth> F#<xyspeed>
+G1 X1.9590 Y0.5182 Z-#<depth> F#<xyspeed>
+G1 X1.9585 Y0.5184 Z-#<depth> F#<xyspeed>
+G0 Z#<safego>
+G0 X1.7339 Y0.6186 Z#<safego>
+G0 X1.7339 Y0.6186 Z#<safego>
+G1 X1.7339 Y0.6186 Z-#<depth> F#<zspeed>
+G1 X1.6948 Y0.6186 Z-#<depth> F#<xyspeed>
+G1 X1.6948 Y0.6535 Z-#<depth> F#<xyspeed>
+G1 X1.7339 Y0.6535 Z-#<depth> F#<xyspeed>
+G1 X1.7339 Y0.6186 Z-#<depth> F#<xyspeed>
+G0 Z#<safego>
+G0 X1.6948 Y0.4500 Z#<safego>
+G0 X1.6948 Y0.4500 Z#<safego>
+G1 X1.6948 Y0.4500 Z-#<depth> F#<zspeed>
+G1 X1.6948 Y0.6008 Z-#<depth> F#<xyspeed>
+G1 X1.7339 Y0.6008 Z-#<depth> F#<xyspeed>
+G1 X1.7339 Y0.4500 Z-#<depth> F#<xyspeed>
+G1 X1.6948 Y0.4500 Z-#<depth> F#<xyspeed>
+G0 Z#<safego>
+G0 X1.8082 Y0.4500 Z#<safego>
+G0 X1.8082 Y0.4500 Z#<safego>
+G1 X1.8082 Y0.4500 Z-#<depth> F#<zspeed>
+G1 X1.7691 Y0.4500 Z-#<depth> F#<xyspeed>
+G1 X1.7691 Y0.6008 Z-#<depth> F#<xyspeed>
+G1 X1.8082 Y0.6008 Z-#<depth> F#<xyspeed>
+G1 X1.8082 Y0.5790 Z-#<depth> F#<xyspeed>
+G1 X1.8131 Y0.5855 Z-#<depth> F#<xyspeed>
+G1 X1.8185 Y0.5909 Z-#<depth> F#<xyspeed>
+G1 X1.8244 Y0.5954 Z-#<depth> F#<xyspeed>
+G1 X1.8309 Y0.5989 Z-#<depth> F#<xyspeed>
+G1 X1.8378 Y0.6014 Z-#<depth> F#<xyspeed>
+G1 X1.8453 Y0.6029 Z-#<depth> F#<xyspeed>
+G1 X1.8534 Y0.6034 Z-#<depth> F#<xyspeed>
+G1 X1.8611 Y0.6030 Z-#<depth> F#<xyspeed>
+G1 X1.8682 Y0.6018 Z-#<depth> F#<xyspeed>
+G1 X1.8747 Y0.5999 Z-#<depth> F#<xyspeed>
+G1 X1.8806 Y0.5973 Z-#<depth> F#<xyspeed>
+G1 X1.8859 Y0.5938 Z-#<depth> F#<xyspeed>
+G1 X1.8906 Y0.5896 Z-#<depth> F#<xyspeed>
+G1 X1.8947 Y0.5848 Z-#<depth> F#<xyspeed>
+G1 X1.8980 Y0.5793 Z-#<depth> F#<xyspeed>
+G1 X1.9006 Y0.5731 Z-#<depth> F#<xyspeed>
+G1 X1.9024 Y0.5664 Z-#<depth> F#<xyspeed>
+G1 X1.9035 Y0.5591 Z-#<depth> F#<xyspeed>
+G1 X1.9039 Y0.5511 Z-#<depth> F#<xyspeed>
+G1 X1.9039 Y0.4500 Z-#<depth> F#<xyspeed>
+G1 X1.8648 Y0.4500 Z-#<depth> F#<xyspeed>
+G1 X1.8648 Y0.5430 Z-#<depth> F#<xyspeed>
+G1 X1.8647 Y0.5470 Z-#<depth> F#<xyspeed>
+G1 X1.8642 Y0.5507 Z-#<depth> F#<xyspeed>
+G1 X1.8635 Y0.5541 Z-#<depth> F#<xyspeed>
+G1 X1.8624 Y0.5571 Z-#<depth> F#<xyspeed>
+G1 X1.8611 Y0.5598 Z-#<depth> F#<xyspeed>
+G1 X1.8595 Y0.5622 Z-#<depth> F#<xyspeed>
+G1 X1.8575 Y0.5643 Z-#<depth> F#<xyspeed>
+G1 X1.8553 Y0.5661 Z-#<depth> F#<xyspeed>
+G1 X1.8528 Y0.5675 Z-#<depth> F#<xyspeed>
+G1 X1.8500 Y0.5686 Z-#<depth> F#<xyspeed>
+G1 X1.8469 Y0.5694 Z-#<depth> F#<xyspeed>
+G1 X1.8434 Y0.5699 Z-#<depth> F#<xyspeed>
+G1 X1.8397 Y0.5701 Z-#<depth> F#<xyspeed>
+G1 X1.8351 Y0.5699 Z-#<depth> F#<xyspeed>
+G1 X1.8308 Y0.5692 Z-#<depth> F#<xyspeed>
+G1 X1.8269 Y0.5681 Z-#<depth> F#<xyspeed>
+G1 X1.8232 Y0.5665 Z-#<depth> F#<xyspeed>
+G1 X1.8199 Y0.5645 Z-#<depth> F#<xyspeed>
+G1 X1.8168 Y0.5620 Z-#<depth> F#<xyspeed>
+G1 X1.8142 Y0.5592 Z-#<depth> F#<xyspeed>
+G1 X1.8120 Y0.5560 Z-#<depth> F#<xyspeed>
+G1 X1.8103 Y0.5526 Z-#<depth> F#<xyspeed>
+G1 X1.8091 Y0.5488 Z-#<depth> F#<xyspeed>
+G1 X1.8084 Y0.5448 Z-#<depth> F#<xyspeed>
+G1 X1.8082 Y0.5405 Z-#<depth> F#<xyspeed>
+G1 X1.8082 Y0.4500 Z-#<depth> F#<xyspeed>
+G0 Z#<safego>
+G0 X1.5665 Y0.4885 Z#<safego>
+G0 X1.5665 Y0.4885 Z#<safego>
+G1 X1.5665 Y0.4885 Z-#<depth> F#<zspeed>
+G1 X1.5695 Y0.4849 Z-#<depth> F#<xyspeed>
+G1 X1.5727 Y0.4819 Z-#<depth> F#<xyspeed>
+G1 X1.5761 Y0.4795 Z-#<depth> F#<xyspeed>
+G1 X1.5798 Y0.4775 Z-#<depth> F#<xyspeed>
+G1 X1.5837 Y0.4762 Z-#<depth> F#<xyspeed>
+G1 X1.5878 Y0.4754 Z-#<depth> F#<xyspeed>
+G1 X1.5923 Y0.4751 Z-#<depth> F#<xyspeed>
+G1 X1.5966 Y0.4754 Z-#<depth> F#<xyspeed>
+G1 X1.6007 Y0.4762 Z-#<depth> F#<xyspeed>
+G1 X1.6046 Y0.4775 Z-#<depth> F#<xyspeed>
+G1 X1.6083 Y0.4794 Z-#<depth> F#<xyspeed>
+G1 X1.6117 Y0.4819 Z-#<depth> F#<xyspeed>
+G1 X1.6149 Y0.4848 Z-#<depth> F#<xyspeed>
+G1 X1.6178 Y0.4884 Z-#<depth> F#<xyspeed>
+G1 X1.6214 Y0.4940 Z-#<depth> F#<xyspeed>
+G1 X1.6242 Y0.5003 Z-#<depth> F#<xyspeed>
+G1 X1.6261 Y0.5072 Z-#<depth> F#<xyspeed>
+G1 X1.6273 Y0.5147 Z-#<depth> F#<xyspeed>
+G1 X1.6277 Y0.5229 Z-#<depth> F#<xyspeed>
+G1 X1.6273 Y0.5315 Z-#<depth> F#<xyspeed>
+G1 X1.6262 Y0.5393 Z-#<depth> F#<xyspeed>
+G1 X1.6243 Y0.5464 Z-#<depth> F#<xyspeed>
+G1 X1.6216 Y0.5528 Z-#<depth> F#<xyspeed>
+G1 X1.6181 Y0.5585 Z-#<depth> F#<xyspeed>
+G1 X1.6152 Y0.5620 Z-#<depth> F#<xyspeed>
+G1 X1.6120 Y0.5650 Z-#<depth> F#<xyspeed>
+G1 X1.6086 Y0.5674 Z-#<depth> F#<xyspeed>
+G1 X1.6049 Y0.5693 Z-#<depth> F#<xyspeed>
+G1 X1.6010 Y0.5706 Z-#<depth> F#<xyspeed>
+G1 X1.5968 Y0.5715 Z-#<depth> F#<xyspeed>
+G1 X1.5923 Y0.5717 Z-#<depth> F#<xyspeed>
+G1 X1.5878 Y0.5715 Z-#<depth> F#<xyspeed>
+G1 X1.5837 Y0.5706 Z-#<depth> F#<xyspeed>
+G1 X1.5798 Y0.5693 Z-#<depth> F#<xyspeed>
+G1 X1.5761 Y0.5673 Z-#<depth> F#<xyspeed>
+G1 X1.5727 Y0.5649 Z-#<depth> F#<xyspeed>
+G1 X1.5695 Y0.5618 Z-#<depth> F#<xyspeed>
+G1 X1.5665 Y0.5583 Z-#<depth> F#<xyspeed>
+G1 X1.5630 Y0.5526 Z-#<depth> F#<xyspeed>
+G1 X1.5603 Y0.5463 Z-#<depth> F#<xyspeed>
+G1 X1.5584 Y0.5393 Z-#<depth> F#<xyspeed>
+G1 X1.5572 Y0.5317 Z-#<depth> F#<xyspeed>
+G1 X1.5568 Y0.5234 Z-#<depth> F#<xyspeed>
+G1 X1.5572 Y0.5151 Z-#<depth> F#<xyspeed>
+G1 X1.5584 Y0.5075 Z-#<depth> F#<xyspeed>
+G1 X1.5603 Y0.5005 Z-#<depth> F#<xyspeed>
+G1 X1.5630 Y0.4942 Z-#<depth> F#<xyspeed>
+G1 X1.5665 Y0.4885 Z-#<depth> F#<xyspeed>
+G0 Z#<safego>
+G0 X1.6467 Y0.4647 Z#<safego>
+G0 X1.6467 Y0.4647 Z#<safego>
+G1 X1.6467 Y0.4647 Z-#<depth> F#<zspeed>
+G1 X1.6396 Y0.4583 Z-#<depth> F#<xyspeed>
+G1 X1.6317 Y0.4530 Z-#<depth> F#<xyspeed>
+G1 X1.6231 Y0.4488 Z-#<depth> F#<xyspeed>
+G1 X1.6136 Y0.4459 Z-#<depth> F#<xyspeed>
+G1 X1.6033 Y0.4441 Z-#<depth> F#<xyspeed>
+G1 X1.5923 Y0.4435 Z-#<depth> F#<xyspeed>
+G1 X1.5811 Y0.4441 Z-#<depth> F#<xyspeed>
+G1 X1.5707 Y0.4459 Z-#<depth> F#<xyspeed>
+G1 X1.5611 Y0.4489 Z-#<depth> F#<xyspeed>
+G1 X1.5524 Y0.4530 Z-#<depth> F#<xyspeed>
+G1 X1.5446 Y0.4584 Z-#<depth> F#<xyspeed>
+G1 X1.5375 Y0.4649 Z-#<depth> F#<xyspeed>
+G1 X1.5315 Y0.4725 Z-#<depth> F#<xyspeed>
+G1 X1.5265 Y0.4809 Z-#<depth> F#<xyspeed>
+G1 X1.5227 Y0.4902 Z-#<depth> F#<xyspeed>
+G1 X1.5199 Y0.5004 Z-#<depth> F#<xyspeed>
+G1 X1.5183 Y0.5115 Z-#<depth> F#<xyspeed>
+G1 X1.5177 Y0.5235 Z-#<depth> F#<xyspeed>
+G1 X1.5183 Y0.5354 Z-#<depth> F#<xyspeed>
+G1 X1.5199 Y0.5465 Z-#<depth> F#<xyspeed>
+G1 X1.5227 Y0.5567 Z-#<depth> F#<xyspeed>
+G1 X1.5265 Y0.5660 Z-#<depth> F#<xyspeed>
+G1 X1.5315 Y0.5744 Z-#<depth> F#<xyspeed>
+G1 X1.5375 Y0.5820 Z-#<depth> F#<xyspeed>
+G1 X1.5446 Y0.5885 Z-#<depth> F#<xyspeed>
+G1 X1.5524 Y0.5939 Z-#<depth> F#<xyspeed>
+G1 X1.5611 Y0.5980 Z-#<depth> F#<xyspeed>
+G1 X1.5706 Y0.6010 Z-#<depth> F#<xyspeed>
+G1 X1.5809 Y0.6028 Z-#<depth> F#<xyspeed>
+G1 X1.5920 Y0.6034 Z-#<depth> F#<xyspeed>
+G1 X1.6034 Y0.6028 Z-#<depth> F#<xyspeed>
+G1 X1.6139 Y0.6010 Z-#<depth> F#<xyspeed>
+G1 X1.6235 Y0.5980 Z-#<depth> F#<xyspeed>
+G1 X1.6322 Y0.5939 Z-#<depth> F#<xyspeed>
+G1 X1.6401 Y0.5885 Z-#<depth> F#<xyspeed>
+G1 X1.6471 Y0.5820 Z-#<depth> F#<xyspeed>
+G1 X1.6531 Y0.5744 Z-#<depth> F#<xyspeed>
+G1 X1.6580 Y0.5659 Z-#<depth> F#<xyspeed>
+G1 X1.6619 Y0.5564 Z-#<depth> F#<xyspeed>
+G1 X1.6646 Y0.5460 Z-#<depth> F#<xyspeed>
+G1 X1.6663 Y0.5347 Z-#<depth> F#<xyspeed>
+G1 X1.6668 Y0.5224 Z-#<depth> F#<xyspeed>
+G1 X1.6663 Y0.5107 Z-#<depth> F#<xyspeed>
+G1 X1.6646 Y0.4998 Z-#<depth> F#<xyspeed>
+G1 X1.6618 Y0.4898 Z-#<depth> F#<xyspeed>
+G1 X1.6579 Y0.4806 Z-#<depth> F#<xyspeed>
+G1 X1.6529 Y0.4722 Z-#<depth> F#<xyspeed>
+G1 X1.6467 Y0.4647 Z-#<depth> F#<xyspeed>
+G0 Z#<safego>
+G0 X1.4893 Y0.4500 Z#<safego>
+G0 X1.4893 Y0.4500 Z#<safego>
+G1 X1.4893 Y0.4500 Z-#<depth> F#<zspeed>
+G1 X1.4642 Y0.4500 Z-#<depth> F#<xyspeed>
+G1 X1.4591 Y0.4768 Z-#<depth> F#<xyspeed>
+G1 X1.4530 Y0.4689 Z-#<depth> F#<xyspeed>
+G1 X1.4467 Y0.4621 Z-#<depth> F#<xyspeed>
+G1 X1.4399 Y0.4564 Z-#<depth> F#<xyspeed>
+G1 X1.4328 Y0.4519 Z-#<depth> F#<xyspeed>
+G1 X1.4252 Y0.4485 Z-#<depth> F#<xyspeed>
+G1 X1.4168 Y0.4460 Z-#<depth> F#<xyspeed>
+G1 X1.4076 Y0.4446 Z-#<depth> F#<xyspeed>
+G1 X1.3976 Y0.4441 Z-#<depth> F#<xyspeed>
+G1 X1.3843 Y0.4449 Z-#<depth> F#<xyspeed>
+G1 X1.3717 Y0.4474 Z-#<depth> F#<xyspeed>
+G1 X1.3599 Y0.4516 Z-#<depth> F#<xyspeed>
+G1 X1.3489 Y0.4575 Z-#<depth> F#<xyspeed>
+G1 X1.3388 Y0.4651 Z-#<depth> F#<xyspeed>
+G1 X1.3294 Y0.4743 Z-#<depth> F#<xyspeed>
+G1 X1.3197 Y0.4870 Z-#<depth> F#<xyspeed>
+G1 X1.3121 Y0.5010 Z-#<depth> F#<xyspeed>
+G1 X1.3068 Y0.5163 Z-#<depth> F#<xyspeed>
+G1 X1.3035 Y0.5329 Z-#<depth> F#<xyspeed>
+G1 X1.3025 Y0.5508 Z-#<depth> F#<xyspeed>
+G1 X1.3035 Y0.5691 Z-#<depth> F#<xyspeed>
+G1 X1.3068 Y0.5859 Z-#<depth> F#<xyspeed>
+G1 X1.3123 Y0.6013 Z-#<depth> F#<xyspeed>
+G1 X1.3200 Y0.6153 Z-#<depth> F#<xyspeed>
+G1 X1.3298 Y0.6279 Z-#<depth> F#<xyspeed>
+G1 X1.3394 Y0.6370 Z-#<depth> F#<xyspeed>
+G1 X1.3499 Y0.6444 Z-#<depth> F#<xyspeed>
+G1 X1.3613 Y0.6501 Z-#<depth> F#<xyspeed>
+G1 X1.3736 Y0.6543 Z-#<depth> F#<xyspeed>
+G1 X1.3868 Y0.6567 Z-#<depth> F#<xyspeed>
+G1 X1.4010 Y0.6575 Z-#<depth> F#<xyspeed>
+G1 X1.4152 Y0.6568 Z-#<depth> F#<xyspeed>
+G1 X1.4284 Y0.6546 Z-#<depth> F#<xyspeed>
+G1 X1.4405 Y0.6509 Z-#<depth> F#<xyspeed>
+G1 X1.4516 Y0.6457 Z-#<depth> F#<xyspeed>
+G1 X1.4616 Y0.6391 Z-#<depth> F#<xyspeed>
+G1 X1.4690 Y0.6326 Z-#<depth> F#<xyspeed>
+G1 X1.4753 Y0.6253 Z-#<depth> F#<xyspeed>
+G1 X1.4804 Y0.6174 Z-#<depth> F#<xyspeed>
+G1 X1.4845 Y0.6087 Z-#<depth> F#<xyspeed>
+G1 X1.4874 Y0.5992 Z-#<depth> F#<xyspeed>
+G1 X1.4893 Y0.5891 Z-#<depth> F#<xyspeed>
+G1 X1.4499 Y0.5891 Z-#<depth> F#<xyspeed>
+G1 X1.4471 Y0.5959 Z-#<depth> F#<xyspeed>
+G1 X1.4436 Y0.6020 Z-#<depth> F#<xyspeed>
+G1 X1.4395 Y0.6072 Z-#<depth> F#<xyspeed>
+G1 X1.4348 Y0.6117 Z-#<depth> F#<xyspeed>
+G1 X1.4294 Y0.6153 Z-#<depth> F#<xyspeed>
+G1 X1.4233 Y0.6181 Z-#<depth> F#<xyspeed>
+G1 X1.4166 Y0.6201 Z-#<depth> F#<xyspeed>
+G1 X1.4093 Y0.6213 Z-#<depth> F#<xyspeed>
+G1 X1.4013 Y0.6217 Z-#<depth> F#<xyspeed>
+G1 X1.3928 Y0.6212 Z-#<depth> F#<xyspeed>
+G1 X1.3849 Y0.6196 Z-#<depth> F#<xyspeed>
+G1 X1.3776 Y0.6170 Z-#<depth> F#<xyspeed>
+G1 X1.3710 Y0.6134 Z-#<depth> F#<xyspeed>
+G1 X1.3649 Y0.6087 Z-#<depth> F#<xyspeed>
+G1 X1.3595 Y0.6030 Z-#<depth> F#<xyspeed>
+G1 X1.3541 Y0.5950 Z-#<depth> F#<xyspeed>
+G1 X1.3498 Y0.5858 Z-#<depth> F#<xyspeed>
+G1 X1.3468 Y0.5755 Z-#<depth> F#<xyspeed>
+G1 X1.3450 Y0.5640 Z-#<depth> F#<xyspeed>
+G1 X1.3444 Y0.5514 Z-#<depth> F#<xyspeed>
+G1 X1.3450 Y0.5393 Z-#<depth> F#<xyspeed>
+G1 X1.3470 Y0.5281 Z-#<depth> F#<xyspeed>
+G1 X1.3502 Y0.5179 Z-#<depth> F#<xyspeed>
+G1 X1.3548 Y0.5085 Z-#<depth> F#<xyspeed>
+G1 X1.3606 Y0.5000 Z-#<depth> F#<xyspeed>
+G1 X1.3663 Y0.4939 Z-#<depth> F#<xyspeed>
+G1 X1.3726 Y0.4888 Z-#<depth> F#<xyspeed>
+G1 X1.3793 Y0.4849 Z-#<depth> F#<xyspeed>
+G1 X1.3865 Y0.4821 Z-#<depth> F#<xyspeed>
+G1 X1.3942 Y0.4805 Z-#<depth> F#<xyspeed>
+G1 X1.4025 Y0.4799 Z-#<depth> F#<xyspeed>
+G1 X1.4052 Y0.4800 Z-#<depth> F#<xyspeed>
+G1 X1.4082 Y0.4803 Z-#<depth> F#<xyspeed>
+G1 X1.4115 Y0.4808 Z-#<depth> F#<xyspeed>
+G1 X1.4151 Y0.4817 Z-#<depth> F#<xyspeed>
+G1 X1.4193 Y0.4830 Z-#<depth> F#<xyspeed>
+G1 X1.4239 Y0.4847 Z-#<depth> F#<xyspeed>
+G1 X1.4309 Y0.4882 Z-#<depth> F#<xyspeed>
+G1 X1.4373 Y0.4925 Z-#<depth> F#<xyspeed>
+G1 X1.4412 Y0.4960 Z-#<depth> F#<xyspeed>
+G1 X1.4449 Y0.5005 Z-#<depth> F#<xyspeed>
+G1 X1.4482 Y0.5057 Z-#<depth> F#<xyspeed>
+G1 X1.4510 Y0.5117 Z-#<depth> F#<xyspeed>
+G1 X1.4529 Y0.5181 Z-#<depth> F#<xyspeed>
+G1 X1.4541 Y0.5251 Z-#<depth> F#<xyspeed>
+G1 X1.4077 Y0.5251 Z-#<depth> F#<xyspeed>
+G1 X1.4077 Y0.5600 Z-#<depth> F#<xyspeed>
+G1 X1.4893 Y0.5600 Z-#<depth> F#<xyspeed>
+G1 X1.4893 Y0.4500 Z-#<depth> F#<xyspeed>
+G0 Z#<safego>
+G0 X1.8248 Y1.2354 Z#<safego>
+G0 X1.8248 Y1.2354 Z#<safego>
+G1 X1.8248 Y1.2354 Z-#<depth> F#<zspeed>
+G1 X1.7874 Y1.2354 Z-#<depth> F#<xyspeed>
+G0 Z#<safego>
+G0 X1.4587 Y1.3445 Z#<safego>
+G0 X1.4587 Y1.3445 Z#<safego>
+G1 X1.4587 Y1.3445 Z-#<depth> F#<zspeed>
+G1 X1.5006 Y1.3445 Z-#<depth> F#<xyspeed>
+G0 Z#<safego>
+G0 X1.5773 Y1.1345 Z#<safego>
+G0 X1.5773 Y1.1345 Z#<safego>
+G1 X1.5773 Y1.1345 Z-#<depth> F#<zspeed>
+G1 X1.5706 Y1.1349 Z-#<depth> F#<xyspeed>
+G1 X1.5644 Y1.1359 Z-#<depth> F#<xyspeed>
+G1 X1.5586 Y1.1377 Z-#<depth> F#<xyspeed>
+G1 X1.5533 Y1.1401 Z-#<depth> F#<xyspeed>
+G1 X1.5484 Y1.1432 Z-#<depth> F#<xyspeed>
+G1 X1.5440 Y1.1470 Z-#<depth> F#<xyspeed>
+G1 X1.5402 Y1.1514 Z-#<depth> F#<xyspeed>
+G1 X1.5370 Y1.1562 Z-#<depth> F#<xyspeed>
+G1 X1.5346 Y1.1614 Z-#<depth> F#<xyspeed>
+G1 X1.5329 Y1.1671 Z-#<depth> F#<xyspeed>
+G1 X1.5318 Y1.1733 Z-#<depth> F#<xyspeed>
+G1 X1.5315 Y1.1798 Z-#<depth> F#<xyspeed>
+G1 X1.5318 Y1.1868 Z-#<depth> F#<xyspeed>
+G1 X1.5329 Y1.1933 Z-#<depth> F#<xyspeed>
+G1 X1.5348 Y1.1992 Z-#<depth> F#<xyspeed>
+G1 X1.5373 Y1.2046 Z-#<depth> F#<xyspeed>
+G1 X1.5406 Y1.2094 Z-#<depth> F#<xyspeed>
+G1 X1.5447 Y1.2137 Z-#<depth> F#<xyspeed>
+G1 X1.5494 Y1.2175 Z-#<depth> F#<xyspeed>
+G1 X1.5549 Y1.2207 Z-#<depth> F#<xyspeed>
+G1 X1.5612 Y1.2235 Z-#<depth> F#<xyspeed>
+G1 X1.5681 Y1.2256 Z-#<depth> F#<xyspeed>
+G1 X1.5758 Y1.2273 Z-#<depth> F#<xyspeed>
+G1 X1.5915 Y1.2301 Z-#<depth> F#<xyspeed>
+G1 X1.5916 Y1.2301 Z-#<depth> F#<xyspeed>
+G1 X1.5919 Y1.2301 Z-#<depth> F#<xyspeed>
+G1 X1.5922 Y1.2301 Z-#<depth> F#<xyspeed>
+G1 X1.5927 Y1.2302 Z-#<depth> F#<xyspeed>
+G1 X1.5932 Y1.2303 Z-#<depth> F#<xyspeed>
+G1 X1.5938 Y1.2303 Z-#<depth> F#<xyspeed>
+G1 X1.5945 Y1.2304 Z-#<depth> F#<xyspeed>
+G1 X1.5953 Y1.2305 Z-#<depth> F#<xyspeed>
+G1 X1.5962 Y1.2306 Z-#<depth> F#<xyspeed>
+G1 X1.5971 Y1.2307 Z-#<depth> F#<xyspeed>
+G1 X1.5983 Y1.2309 Z-#<depth> F#<xyspeed>
+G1 X1.5994 Y1.2311 Z-#<depth> F#<xyspeed>
+G1 X1.6003 Y1.2312 Z-#<depth> F#<xyspeed>
+G1 X1.6012 Y1.2314 Z-#<depth> F#<xyspeed>
+G1 X1.6019 Y1.2315 Z-#<depth> F#<xyspeed>
+G1 X1.6026 Y1.2317 Z-#<depth> F#<xyspeed>
+G1 X1.6031 Y1.2318 Z-#<depth> F#<xyspeed>
+G1 X1.6035 Y1.2319 Z-#<depth> F#<xyspeed>
+G1 X1.6040 Y1.2321 Z-#<depth> F#<xyspeed>
+G1 X1.6047 Y1.2323 Z-#<depth> F#<xyspeed>
+G1 X1.6056 Y1.2325 Z-#<depth> F#<xyspeed>
+G1 X1.6065 Y1.2327 Z-#<depth> F#<xyspeed>
+G1 X1.6077 Y1.2329 Z-#<depth> F#<xyspeed>
+G1 X1.6089 Y1.2332 Z-#<depth> F#<xyspeed>
+G1 X1.6102 Y1.2335 Z-#<depth> F#<xyspeed>
+G1 X1.6114 Y1.2338 Z-#<depth> F#<xyspeed>
+G1 X1.6124 Y1.2341 Z-#<depth> F#<xyspeed>
+G1 X1.6133 Y1.2344 Z-#<depth> F#<xyspeed>
+G1 X1.6140 Y1.2347 Z-#<depth> F#<xyspeed>
+G1 X1.6147 Y1.2351 Z-#<depth> F#<xyspeed>
+G1 X1.6159 Y1.2359 Z-#<depth> F#<xyspeed>
+G1 X1.6172 Y1.2369 Z-#<depth> F#<xyspeed>
+G1 X1.6187 Y1.2380 Z-#<depth> F#<xyspeed>
+G1 X1.6198 Y1.2389 Z-#<depth> F#<xyspeed>
+G1 X1.6207 Y1.2400 Z-#<depth> F#<xyspeed>
+G1 X1.6214 Y1.2410 Z-#<depth> F#<xyspeed>
+G1 X1.6219 Y1.2422 Z-#<depth> F#<xyspeed>
+G1 X1.6224 Y1.2439 Z-#<depth> F#<xyspeed>
+G1 X1.6227 Y1.2457 Z-#<depth> F#<xyspeed>
+G1 X1.6227 Y1.2477 Z-#<depth> F#<xyspeed>
+G0 Z#<safego>
+G0 X1.5917 Y1.1661 Z#<safego>
+G0 X1.5917 Y1.1661 Z#<safego>
+G1 X1.5917 Y1.1661 Z-#<depth> F#<zspeed>
+G1 X1.5965 Y1.1663 Z-#<depth> F#<xyspeed>
+G1 X1.6009 Y1.1671 Z-#<depth> F#<xyspeed>
+G1 X1.6049 Y1.1684 Z-#<depth> F#<xyspeed>
+G1 X1.6085 Y1.1702 Z-#<depth> F#<xyspeed>
+G1 X1.6118 Y1.1725 Z-#<depth> F#<xyspeed>
+G1 X1.6147 Y1.1753 Z-#<depth> F#<xyspeed>
+G0 Z#<safego>
+G0 X1.3930 Y1.1467 Z#<safego>
+G0 X1.3930 Y1.1467 Z#<safego>
+G1 X1.3930 Y1.1467 Z-#<depth> F#<zspeed>
+G1 X1.3884 Y1.1504 Z-#<depth> F#<xyspeed>
+G1 X1.3842 Y1.1548 Z-#<depth> F#<xyspeed>
+G1 X1.3806 Y1.1600 Z-#<depth> F#<xyspeed>
+G1 X1.3774 Y1.1660 Z-#<depth> F#<xyspeed>
+G0 Z#<safego>
+($$$$$)
+(++++++++)  
+o150 endwhile
+
+
+(++++++++)  
+(end of engrave)
+(*************)
+
+(finish operation: Engrave)
+(begin postamble)
+G00 G53 X0 Y0 Z0  M2  ;that's all;%

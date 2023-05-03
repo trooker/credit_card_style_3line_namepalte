@@ -1,0 +1,127 @@
+%
+;Copyright © 1988-2022 by Abbott Analytical Products. All Rights Reserved.
+; Square Blank for Jack
+;221125_tr 1> ASR need corner test hoes for level holding 
+;           2> Need loop count message
+;221125_tr implemented safego, xyspeed, and zpeed
+;           copied looping from *_052_990_*_scribeBox.ngc
+;           added o152 for M106 for verification
+
+(Exported by FreeCAD)
+(Post Processor: linuxcnc_post)
+(Output Time:2022-11-25 11:09:31.822355)
+(begin preamble)
+;G40G49G80G61G54G90G20F30S1000 ; 
+G20
+
+;Begin embed
+;Embedded 025 DRossie nameplate code
+(^^^^ Begin Abstracted from 182_ .ngc)
+
+#<sheet_thick>        = .010     ; 10/20 = .5 thou 
+
+;Basic work setup from basicCylinder_008_003_ngc
+;Milling
+;#<passesneeded> = 20 (number of times to go around) ; to set desired depth of engraved cut.
+(passdepth = sheet_thick/passesneeded )
+;#<passdepth>    = [#<sheet_thick> / #<passesneeded>] ;thickness of each milling level slice required for desired depth
+
+
+
+;Engrave
+#<passdepth>     = .0005        ;swag depth of engrave
+#<passesengrave> = 20 (number of times to go around)
+#<engrave_depthperloop>      = [#<passdepth> * #<passesengrave>] ;set Engrave depth to depth for one loop pass of characters
+(depthengrave = engrave_depthperloop/passesengrave)
+#<depthengrave>  = [#<engrave_depthperloop> / #<passesengrave>]
+
+#<safego>      = 0.2000
+#<xyspeed>     = 6;
+#<zspeed>      = 3.9;  
+#<tabspeed>    = 6
+
+
+
+G40	; disable tool radius compensation
+;180506   G49	; disable tool length compensation
+G80	; cancel modal motion
+G54	; select coordinate system 1
+G90	; disable incremental moves
+G20	; change from metric to english
+F#<xyspeed>	; set feedrate
+S1000	; set spindle speed
+G61	; exact path mode
+
+
+
+
+(begin operation: T21: Dremel Scribe Engraver)
+(machine: not set, in/min)
+(T21: Dremel Scribe Engraver)
+M6 T21
+M3 S1200
+(finish operation: T21: Dremel Scribe Engraver)
+
+G04 P3.0	; wait for 3.0 seconds
+
+
+
+(begin operation: Engrave001)
+(start engrave loop)
+
+
+
+#<i>      = 0; #302
+#<zvalue> = 0; #303
+#<depth>  = 0
+o150 while [#<i> lt #<passesengrave>]
+#<i> = [#<i> + 1]
+#<depth> = [#<i> * #<depthengrave>]
+
+
+(^^^^^^)
+
+G01  Z#<safego> F#<zspeed>        
+
+
+($$$$$$)
+
+
+;End embed of top end of loop
+
+
+
+(begin operation: Contour001)
+(machine: not set, in/min)
+(Contour001)
+(Compensated Tool Path. Diameter: 6.35)
+G0 Z#<safego>
+G0 X3.2214 Y1.6844
+G1 X3.2214 Y1.6844 Z#<depth> F#<zspeed>
+G2 X3.3155 Y1.4799 Z#<depth> I-0.2313 J-0.2303 F#<xyspeed>
+G1 X3.3179 Y0.3555 Z#<depth> F#<xyspeed>
+o152 if[#<i> EQ 1]
+(MSG, First corner.  Waiting for your verifcation)        
+ M106
+o152 endif
+G2 X3.0173 Y0.0329 Z#<depth> I-0.3260 J0.0024 F#<xyspeed>
+G1 X0.3929 Y0.0305 Z#<depth> F#<xyspeed>
+G2 X0.0703 Y0.3311 Z#<depth> I0.0028 J0.3264 F#<xyspeed>
+G1 X0.0679 Y1.4555 Z#<depth> F#<xyspeed>
+G2 X0.3685 Y1.7781 Z#<depth> I0.3260 J-0.0024 F#<xyspeed>
+G1 X2.9929 Y1.7805 Z#<depth> F#<xyspeed>
+G2 X3.2214 Y1.6844 Z#<depth> I-0.0028 J-0.3264 F#<xyspeed>
+G0 Z#<safego>
+($$$$$)
+(++++++++)  
+o150 endwhile
+
+
+(++++++++)  
+(end of engrave)
+(*************)
+
+
+(finish operation: Contour001)
+(begin postamble)
+G00 G53 X0 Y0 Z0  M2  ;that's all;

@@ -1,0 +1,72 @@
+%
+;Copyright © 1988-2022 by Abbott Analytical Products. All Rights Reserved.
+; Probe path for Jack's nameplate that checks four corners for flatness
+;     cut from s04.vv_106_040_986_lipCut.ngc: gCode for milling the releif feature on the belly of the lure.
+;221126_tr  set Z#<safego>, F#<xyVel>, F#<zVel>, F#<tabVel>, andtestdepth alginment check
+
+
+
+
+(Exported by FreeCAD)
+(Post Processor: linuxcnc_post)
+(Output Time:2021-07-11 20:55:18.477899)
+(begin preamble)
+G40G49G80G61G54G90G20F30S1000 ; test 180924
+G20
+
+#<safego> = 0.2000
+#<xyVel>     =  15;    Jacks engrave speed is set to 6
+#<zVel>      =  3.9000
+#<tabVel>    =  9.4500
+#<testdepth> = -0.0025
+
+
+(begin operation: T10 Probe EndMill002)
+(machine: not set, in/min)
+(T10 P10 Z3 ;toolsensorprobe)
+M6 T10
+M3 S300
+(finish operation: T10 Probe EndMill002)
+
+
+; test for proper alignment within outline of bottom
+ 
+
+G0 X3.41 Y1.81 Z#<safego>
+G1 X3.41 Y1.81 Z#<testdepth> F#<zVel>
+(MSG, First corner.  Waiting for your verifcation)        
+ M106
+G04 P5.0	; wait for 3.0 seconds
+G0 Z#<safego>
+
+G1 X3.41 Y0.0 Z#<safego>F#<xyVel>
+G1 X3.41 Y0.0 Z#<testdepth> F#<zVel>
+(MSG, Second corner.  Waiting for your verifcation)        
+ M106
+G04 P5.0	; wait for 3.0 seconds
+G1 X3.41 Y0.0  Z#<safego> F#<xyVel>
+G1 X0.0 Y0.0   Z#<safego>
+G1 X0.0 Y0.0 Z#<testdepth> F#<zVel>
+(MSG, Third corner.  Waiting for your verifcation)        
+ M106
+G04 P5.0	; wait for 3.0 seconds
+G1 X0.0 Y0.0 Z#<safego> F#<xyVel>
+G1 X0.0 Y1.81 Z#<safego> 
+G1 X0.0 Y1.81 Z#<testdepth> F#<zVel>
+(MSG, Fourth corner.  Waiting for your verifcation)        
+ M106
+ G04 P5.0	; wait for 3.0 seconds
+G1 X0.0 Y1.81  Z#<safego>F#<xyVel>
+G1 X3.41 Y1.81  Z#<safego>
+G1 X3.41 Y1.81 Z#<testdepth> F#<zVel>
+(MSG, Confirm all is ready to proceed with engrave cut.)        
+ M106
+G04 P5.0	; wait for 3.0 seconds
+G1 X3.41 Y1.81 Z#<safego>F#<xyVel>
+G0 X0.0 Y0.0 Z#<safego>
+
+G0 Z#<safego>
+(finish operation: Engrave Flatness Check)
+(begin postamble)
+G00 G53 X0 Y0 Z0  M2  ;that's all
+%
